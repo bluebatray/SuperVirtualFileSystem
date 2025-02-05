@@ -8,13 +8,13 @@
 class Gui {
 
 public:
-	Gui(IInputHandler& inputHandler, IOutputHandler& outputHandler) : inputHandler(inputHandler), outputHandler(outputHandler) {}
+	Gui(IInputHandler& input_handler, IOutputHandler& output_handler) : input_handler(input_handler), output_handler(output_handler) {}
 	void run();
 
 private:
 
 	const std::string find_suggestion(std::string prefix);
 
-	IInputHandler& inputHandler;
-	IOutputHandler& outputHandler;
+	IInputHandler& input_handler;
+	IOutputHandler& output_handler;
 };

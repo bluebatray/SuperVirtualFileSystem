@@ -7,6 +7,5 @@
 class CopyCommand : public ICommand{
 
 public:
-	std::string GetCommandSyntax() override;
 	void HandleCommand() override;
 };

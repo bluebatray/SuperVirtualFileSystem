@@ -6,41 +6,47 @@
 #include "virtual_file_system_lib.hpp"
 #include "commands/i_command.hpp"
 #include "commands/copy_command.hpp"
-
+#include "commands/command_manager.hpp"
 
 const std::string PROMPT = " > ";
 //#include "i_command.hpp"
 
 void Gui::run()
 {
+	
+	std::map<std::string, ICommand*> commandMap = {{"cp", new CopyCommand()}};
+
+	CommandManager commandManager(std::move(commandMap));
+
 	PrintFileSystemInfo();
 
 	std::string line;
 	std::string suggested = "cp dir1 dir2";
 	std::string currentDirectory = "root";
 
-	outputHandler.print(currentDirectory + PROMPT);
+	
+	output_handler.print(currentDirectory + PROMPT);
 
 	while (true) {
 	
-		char ch = inputHandler.read_char();
+		const char ch = input_handler.read_char();
 
-		int charValue = static_cast<int>(ch);
+		int charValue = static_cast<unsigned char>(ch);
 		//std::cout << charValue << std::endl;
 		
 		
 		if (ch == 13 || ch == '\n') { //enter
 
-			outputHandler.print_line("");
+			output_handler.print_line("");
 
-			if (line.compare("exit") == 0) { //escape
-				outputHandler.print_line("Exiting...");
+			if (line == "exit") { //escape
+				output_handler.print_line("Exiting...");
 				break;
 			}
 			
 
 			//execute command
-
+			commandManager.ExecuteCommand(line);
 			suggested.clear();
 			line.clear();
 
@@ -63,7 +69,7 @@ void Gui::run()
 			suggested = find_suggestion(line);
 		}
 
-		outputHandler.redraw_input(currentDirectory + PROMPT, line, suggested);
+		output_handler.redraw_input(currentDirectory + PROMPT, line, suggested);
 			
 
 	}
