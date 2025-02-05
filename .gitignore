@@ -1,0 +1,43 @@
+# Ignore build directories
+/build/
+out/
+bin/
+obj/
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+
+# Ignore Visual Studio-specific files
+*.sln
+*.vcxproj*
+*.filters
+*.user
+*.vs/
+
+# Ignore macOS-specific files
+.DS_Store
+
+# Ignore Windows-specific files
+Thumbs.db
+Desktop.ini
+
+# Ignore compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.o
+*.obj
+*.pdb
+*.exp
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
