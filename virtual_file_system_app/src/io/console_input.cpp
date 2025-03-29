@@ -5,18 +5,18 @@
 
 #include <windows.h>
 
-bool ConsoleInput::read_line(std::string& input)
+bool ConsoleInput::ReadLine(std::string& input)
 {
 	std::getline(std::cin, input);
 	return !input.empty();
 }
-bool ConsoleInput::read(std::string& input) 
+bool ConsoleInput::Read(std::string& input) 
 {
 	std::cin >> input;
 	return !input.empty();
 }
 
-char ConsoleInput::read_char() {
+char ConsoleInput::ReadChar() {
     char ch = 0;
     DWORD mode, count;
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);

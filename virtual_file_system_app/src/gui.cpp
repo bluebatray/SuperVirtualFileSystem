@@ -4,91 +4,61 @@
 #include <iostream>
 
 #include "virtual_file_system_lib.hpp"
-#include "commands/i_command.hpp"
-#include "commands/copy_command.hpp"
 #include "commands/command_manager.hpp"
 
+static constexpr auto IsEnter(const char ch) -> bool { return ch == 13 || ch == '\n'; }
+static constexpr auto IsTab(const char ch) -> bool { return ch == 9 || ch == '\t'; }
+static constexpr auto IsBackspace(const char ch) -> bool { return ch == 127 || ch == '\b'; }
+
 const std::string PROMPT = " > ";
-//#include "i_command.hpp"
+
 
 void Gui::run()
 {
-	
-	std::map<std::string, ICommand*> commandMap = {{"cp", new CopyCommand()}};
-
-	CommandManager commandManager(std::move(commandMap));
+	CommandManager commandManager;
 
 	PrintFileSystemInfo();
 
-	std::string line;
-	std::string suggested = "cp dir1 dir2";
+	std::string typedLine;
 	std::string currentDirectory = "root";
 
 	
-	output_handler.print(currentDirectory + PROMPT);
+	output_handler.Print(currentDirectory + PROMPT);
 
 	while (true) {
 	
-		const char ch = input_handler.read_char();
+		const char ch = input_handler.ReadChar();
+					
+		if (IsEnter(ch)) { //execute command
 
-		int charValue = static_cast<unsigned char>(ch);
-		//std::cout << charValue << std::endl;
-		
-		
-		if (ch == 13 || ch == '\n') { //enter
+			output_handler.PrintLine("");
 
-			output_handler.print_line("");
-
-			if (line == "exit") { //escape
-				output_handler.print_line("Exiting...");
+			if (typedLine == "exit") { //escape
+				output_handler.PrintLine("Exiting...");
 				break;
 			}
+						
+			commandManager.ExecuteLine(typedLine);
+			typedLine.clear();
+
+		}else if (IsTab(ch)) { //add rest of suggestion
 			
+			typedLine += commandManager.GetSuggestion(typedLine);	
 
-			//execute command
-			commandManager.ExecuteCommand(line);
-			suggested.clear();
-			line.clear();
+		}else if (IsBackspace(ch)) { //remove letter
 
+			if (!typedLine.empty())
+				typedLine.pop_back();
+
+		}else { //add letter
+			typedLine.push_back(ch);
 		}
-		else if (ch == 9 || ch == '\t') { //tab
-			//complete suggested
-			line += suggested;
-			suggested.clear();
+
+		std::string suggestion = commandManager.GetSuggestion(typedLine);
+		output_handler.RedrawInput(currentDirectory + PROMPT, typedLine, suggestion);
 			
-		}
-		else if (ch == 127 || ch == '\b') { //backspace
-
-			if (!line.empty())
-				line.pop_back();
-
-			suggested = find_suggestion(line);
-		}
-		else { //add letter
-			line.push_back(ch);
-			suggested = find_suggestion(line);
-		}
-
-		output_handler.redraw_input(currentDirectory + PROMPT, line, suggested);
-			
-
 	}
 
-		
-}
-
-const std::string Gui::find_suggestion(std::string prefix)
-{
-	std::string suggested = "cp dir1 dir2";
-
-	size_t found = suggested.rfind(prefix);
-
-	if (found == std::string::npos) {
-		return "";
-	}
-	
-	//return suggestion (only what's left from what's already typed)
-	return suggested.substr(found+prefix.length(), suggested.length() - prefix.length());
 }
 
 

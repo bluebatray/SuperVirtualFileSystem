@@ -9,9 +9,10 @@
 #include "virtual_file_system.hpp"
 int main()
 {
-	VirtualFileSystem vfs;
-  vfs.PrintFileSystemInfo();
-        return 0;
+	//VirtualFileSystem vfs;
+ // vfs.PrintFileSystemInfo();
+ //       return 0;
+
 	ConsoleInput inputHandler;
 	ConsoleOutput outputHandler;
 

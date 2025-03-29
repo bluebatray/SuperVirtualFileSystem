@@ -9,7 +9,7 @@ add_executable(VirtualFileSystem
     "src/io/console_input.cpp"
     "src/commands/copy_command.cpp"
  "src/commands/command_manager.cpp"
-)
+ )
 
 # Ensure VirtualFileSystem is properly defined before linking
 if (NOT TARGET VirtualFileSystem)

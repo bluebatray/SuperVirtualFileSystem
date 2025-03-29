@@ -6,12 +6,12 @@
 
 class ConsoleOutput : public IOutputHandler {
 public:
-	void print(const std::string& message) override;
-	void print_line(const std::string& message) override;
-	void redraw_input(const std::string& prompt, const std::string& input, const std::string& sugggested) override;
+	void Print(const std::string& message) override;
+	void PrintLine(const std::string& message) override;
+	void RedrawInput(const std::string& prompt, const std::string& input, const std::string& sugggested) override;
 
 private:
-	void set_color(int color);
+	void SetColor(int color);
 
 };
 

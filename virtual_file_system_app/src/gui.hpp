@@ -12,9 +12,6 @@ public:
 	void run();
 
 private:
-
-	const std::string find_suggestion(std::string prefix);
-
 	IInputHandler& input_handler;
 	IOutputHandler& output_handler;
 };

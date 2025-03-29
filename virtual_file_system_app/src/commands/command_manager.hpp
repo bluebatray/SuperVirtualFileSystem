@@ -8,12 +8,13 @@
 class CommandManager {
 
 public:
-	explicit CommandManager(std::map<std::string, ICommand*> command_map)
-		: command_map_(std::move(command_map)){}
+	CommandManager();
 
-	void ExecuteCommand(const std::string& command);
+	void ExecuteLine(const std::string& line);
+	std::string GetSuggestion(const std::string& input);
 
 private:
+	std::vector<std::string> ParseLineToVector(const std::string& line);
 	std::map<std::string, ICommand*> command_map_;
 };
 

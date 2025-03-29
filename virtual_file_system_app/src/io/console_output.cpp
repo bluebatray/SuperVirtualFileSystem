@@ -5,7 +5,7 @@
 #ifdef _WIN32
 #include <windows.h>
 
-void ConsoleOutput::set_color(int color) {
+void ConsoleOutput::SetColor(int color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
 }
@@ -22,22 +22,22 @@ void ConsoleOutput::set_color(int color) {
 
 #endif
 
-void ConsoleOutput::print(const std::string& message)
+void ConsoleOutput::Print(const std::string& message)
 {
 	std::cout << message;
 }
 
-void ConsoleOutput::print_line(const std::string& message) {
+void ConsoleOutput::PrintLine(const std::string& message) {
 	std::cout << message << std::endl;
 }
 
 
-void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& input, const std::string& suggested) {
+void ConsoleOutput::RedrawInput(const std::string& prompt, const std::string& input, const std::string& suggested) {
     std::cout << "\r" << prompt; // Reset cursor position
 
     // Print typed input in white
 #ifdef _WIN32
-    set_color(WHITE_COLOR);
+    SetColor(WHITE_COLOR);
 #else
     std::cout << WHITE;
 #endif
@@ -46,7 +46,7 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
     // Print suggested remaining part in gray
     if (!suggested.empty()) {
 #ifdef _WIN32
-        set_color(GRAY_COLOR);
+        SetColor(GRAY_COLOR);
 #else
         std::cout << GRAY;
 #endif
@@ -55,7 +55,7 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
 
     // Reset color back to normal
 #ifdef _WIN32
-    set_color(RESET_COLOR);
+    SetColor(RESET_COLOR);
 #else
     std::cout << RESET;
 #endif

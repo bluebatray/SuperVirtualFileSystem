@@ -5,7 +5,7 @@
 #include "i_input_handler.hpp"
 
 class ConsoleInput : public IInputHandler {
-	bool read_line(std::string&) override;
-	bool read(std::string&) override;
-	char read_char() override;
+	bool ReadLine(std::string&) override;
+	bool Read(std::string&) override;
+	char ReadChar() override;
 };

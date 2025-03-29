@@ -3,8 +3,9 @@
 #include <string>
 #include <iostream>
 
-void CopyCommand::HandleCommand()
+void CopyCommand::HandleCommand(std::vector<std::string> args)
 {
 	std::cout << " handle copy command " << "\n";
+
   PrintFileSystemInfo();
 }
