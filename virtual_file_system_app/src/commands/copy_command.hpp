@@ -3,19 +3,20 @@
 #include <string>
 #include <vector>
 
-#include "i_command.hpp"
 #include "../filesystem/file_system.hpp"
+#include "i_command.hpp"
 
-namespace virtualfilesystem {
+namespace virtualfilesystem
+{
 
-	class CopyCommand : public ICommand {
+class CopyCommand : public ICommand
+{
+   public:
+    CopyCommand(FileSystem& filesystem) : m_filesystem(filesystem) {}
 
-	public:
-		CopyCommand(FileSystem& filesystem) : m_filesystem(filesystem) {}
+    void HandleCommand(std::vector<std::string> args) override;
 
-		void HandleCommand(std::vector<std::string> args) override;
-
-	private:
-		FileSystem& m_filesystem;
-	};
-}
+   private:
+    FileSystem& m_filesystem;
+};
+}  // namespace virtualfilesystem

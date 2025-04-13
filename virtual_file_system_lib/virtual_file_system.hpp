@@ -13,7 +13,7 @@
 #include <string>
 
 class VIRTUALFILESYSTEMLIB_API VirtualFileSystem {
- public:
+public:
   VirtualFileSystem();
   ~VirtualFileSystem();
 

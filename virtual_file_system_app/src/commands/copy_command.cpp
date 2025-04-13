@@ -1,16 +1,16 @@
 #include "copy_command.hpp"
 
-#include <string>
 #include <iostream>
+#include <string>
 
-namespace virtualfilesystem {
-	void CopyCommand::HandleCommand(std::vector<std::string> args)
-	{
-		std::cout << " handle copy command " << "\n";
+namespace virtualfilesystem
+{
+void CopyCommand::HandleCommand(std::vector<std::string> args)
+{
+    std::cout << " handle copy command " << "\n";
 
-		PrintFileSystemInfo();
+    PrintFileSystemInfo();
 
-		m_filesystem.CopyFile(args[0], args[1]);
-
-	}
+    m_filesystem.CopyFile(args[0], args[1]);
 }
+}  // namespace virtualfilesystem

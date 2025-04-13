@@ -4,11 +4,13 @@
 
 #include "i_input_handler.hpp"
 
-namespace io {
+namespace io
+{
 
-	class ConsoleInput : public IInputHandler {
-		bool read_line(std::string&) override;
-		bool read(std::string&) override;
-		char read_char() override;
-	};
-}
+class ConsoleInput : public IInputHandler
+{
+    bool read_line(std::string&) override;
+    bool read(std::string&) override;
+    char read_char() override;
+};
+}  // namespace io

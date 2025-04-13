@@ -2,7 +2,8 @@
 
 void virtualfilesystem::ListDirectoryCommand::HandleCommand(std::vector<std::string> args)
 {
-	for (Node node : m_filesystem.GetNodeList()) {
-		m_outputhandler.print_line(node.name);
-	}
+    for (Node node : m_filesystem.GetNodeList())
+    {
+        m_outputhandler.print_line(node.name);
+    }
 }

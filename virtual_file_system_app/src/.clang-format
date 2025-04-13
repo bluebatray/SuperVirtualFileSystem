@@ -1,0 +1,42 @@
+BasedOnStyle: Google
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Naming and formatting preferences
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Brace style
+BreakBeforeBraces: Allman  # Braces on a new line like:
+                           # void func()
+                           # {
+                           #     ...
+                           # }
+
+# Column limit for line wrapping
+ColumnLimit: 100
+
+# Pointer and reference alignment
+PointerAlignment: Left     # int* ptr; instead of int *ptr;
+SpaceBeforeParens: ControlStatements
+
+# Includes and ordering
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        1
+    SortPriority:    0
+  - Regex:           '^".*\.hpp"'
+    Priority:        2
+    SortPriority:    1
+SortIncludes: true
+IncludeIsMainRegex: 'main\.cpp'
+
+# C++ features
+Standard: c++20
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
