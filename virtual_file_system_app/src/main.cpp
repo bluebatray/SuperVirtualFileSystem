@@ -1,10 +1,8 @@
 #include <iostream>
 
-
-#include "src/gui.hpp"
-#include "src/io/console_input.hpp"
-#include "src/io/console_output.hpp"
-
+#include "gui.hpp"
+#include "io/console_input.hpp"
+#include "io/console_output.hpp"
 
 #include "virtual_file_system.hpp"
 int main()
@@ -13,8 +11,8 @@ int main()
  // vfs.PrintFileSystemInfo();
  //       return 0;
 
-	ConsoleInput inputHandler;
-	ConsoleOutput outputHandler;
+	io::ConsoleInput inputHandler;
+	io::ConsoleOutput outputHandler;
 
 	Gui theGui(inputHandler, outputHandler);
 	theGui.run();

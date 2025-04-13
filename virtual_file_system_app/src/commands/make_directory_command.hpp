@@ -1,21 +1,18 @@
 #pragma once
 
 #include <string>
-#include <vector>
-
-#include "i_command.hpp"
 #include "../filesystem/file_system.hpp"
+#include "i_command.hpp"
 
 namespace virtualfilesystem {
-
-	class CopyCommand : public ICommand {
+	class MakeDirectoryCommand : public ICommand {
 
 	public:
-		CopyCommand(FileSystem& filesystem) : m_filesystem(filesystem) {}
-
+		MakeDirectoryCommand(FileSystem& filesystem) : m_fileSystem(filesystem){}
 		void HandleCommand(std::vector<std::string> args) override;
 
 	private:
-		FileSystem& m_filesystem;
+		FileSystem& m_fileSystem;
 	};
+
 }

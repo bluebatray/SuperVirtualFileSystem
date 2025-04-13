@@ -5,32 +5,35 @@
 
 #include <windows.h>
 
-bool ConsoleInput::ReadLine(std::string& input)
-{
-	std::getline(std::cin, input);
-	return !input.empty();
-}
-bool ConsoleInput::Read(std::string& input) 
-{
-	std::cin >> input;
-	return !input.empty();
-}
+namespace io {
 
-char ConsoleInput::ReadChar() {
-    char ch = 0;
-    DWORD mode, count;
-    HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+    bool ConsoleInput::read_line(std::string& input)
+    {
+        std::getline(std::cin, input);
+        return !input.empty();
+    }
+    bool ConsoleInput::read(std::string& input)
+    {
+        std::cin >> input;
+        return !input.empty();
+    }
 
-    // Get current console mode
-    GetConsoleMode(hInput, &mode);
+    char ConsoleInput::read_char() {
+        char ch = 0;
+        DWORD mode, count;
+        HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 
-    // Disable line buffering & echo
-    SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
+        // Get current console mode
+        GetConsoleMode(hInput, &mode);
 
-    ReadConsoleA(hInput, &ch, 1, &count, NULL);
+        // Disable line buffering & echo
+        SetConsoleMode(hInput, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
 
-    // Restore original mode
-    SetConsoleMode(hInput, mode);
+        ReadConsoleA(hInput, &ch, 1, &count, NULL);
 
-    return ch;
+        // Restore original mode
+        SetConsoleMode(hInput, mode);
+
+        return ch;
+    }
 }

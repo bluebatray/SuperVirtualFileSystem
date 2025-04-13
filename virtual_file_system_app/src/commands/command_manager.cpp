@@ -2,57 +2,72 @@
 
 #include "i_command.hpp"
 #include "copy_command.hpp"
+#include "make_directory_command.hpp"
+#include "list_directory_command.hpp"
 
-CommandManager::CommandManager() { //setup default commands
-	this->command_map_ = { {"cp", new CopyCommand()} };
-}
+namespace virtualfilesystem {
 
-void CommandManager::ExecuteLine(const std::string& line)
-{
-	std::vector parsedValues = ParseLineToVector(line);
+	//CommandManager::CommandManager() : m_filesystem(), m_outputhandler() { //setup default commands
+	//	this->m_command_map = { 
+	//		{"cp", new CopyCommand(m_filesystem)},
+	//		{"mkdir", new MakeDirectoryCommand(m_filesystem)},
+	//		{"ls", new ListDirectoryCommand(m_filesystem, m_outputhandler)}
+	//	};
+	//}
 
-	if(!parsedValues.empty() && command_map_.contains(parsedValues[0]))
+	CommandManager::CommandManager(std::map<std::string, std::unique_ptr<ICommand>>&& command_map)
 	{
-		std::vector<std::string> args(&parsedValues[1], &parsedValues[parsedValues.size() - 1] + 1);
-		command_map_[parsedValues[0]]->HandleCommand(args);
-	}
-}
-
-std::string CommandManager::GetSuggestion(const std::string& prefix)
-{
-
-	std::string suggested = "cp dir1 dir2";
-
-	size_t found = suggested.rfind(prefix);
-
-	if (found == std::string::npos) {
-		return "";
+		this->m_command_map = std::move(command_map);
 	}
 
-	//return suggestion (only what's left from what's already typed)
-	return suggested.substr(found + prefix.length(), suggested.length() - prefix.length());
+	void CommandManager::execute_line(const std::string& line)
+	{
+		std::vector parsedValues = parse_line_to_vector(line);
 
-}
+		if (!parsedValues.empty() && m_command_map.contains(parsedValues[0]))
+		{
+			std::vector<std::string> args(&parsedValues[1], &parsedValues[parsedValues.size() - 1] + 1);
+			m_command_map[parsedValues[0]]->HandleCommand(args);
+		}
+	}
 
-std::vector<std::string> CommandManager::ParseLineToVector(const std::string& line)
-{
-	std::vector<std::string> parsedValues;
+	std::string CommandManager::get_suggestion(const std::string& prefix)
+	{
 
-	int beginIndex = 0;
-	int endLength = 0;
+		std::string suggested = "cp dir1 dir2";
 
-	for (char ch : line) {
+		size_t found = suggested.rfind(prefix);
 
-		if (ch == ' ') {
-			parsedValues.push_back(line.substr(beginIndex, endLength));
-			beginIndex += endLength;
-			endLength = 0;
+		if (found == std::string::npos) {
+			return "";
 		}
 
-		endLength++;
+		//return suggestion (only what's left from what's already typed)
+		return suggested.substr(found + prefix.length(), suggested.length() - prefix.length());
+
 	}
 
-	parsedValues.push_back(line.substr(beginIndex, endLength));
+	std::vector<std::string> CommandManager::parse_line_to_vector(const std::string& line)
+	{
+		std::vector<std::string> parsedValues;
 
-	return parsedValues;
+		int beginIndex = 0;
+		int endLength = 0;
+
+		for (char ch : line) {
+
+			if (ch == ' ') {
+				parsedValues.push_back(line.substr(beginIndex, endLength));
+				beginIndex += endLength;
+				endLength = 0;
+			}
+
+			endLength++;
+		}
+
+		parsedValues.push_back(line.substr(beginIndex, endLength));
+
+		return parsedValues;
+	}
+
 }
