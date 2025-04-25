@@ -17,6 +17,8 @@ class File : public Node
     {
     }
 
+    NodeType GetNodeType() const override { return NodeType::File; } 
+
     std::weak_ptr<Directory> parentDirectory;
 };
 }  // namespace virtualfilesystem

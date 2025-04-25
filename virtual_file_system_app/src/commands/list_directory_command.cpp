@@ -1,9 +1,26 @@
 #include "list_directory_command.hpp"
 
-void virtualfilesystem::ListDirectoryCommand::HandleCommand(std::vector<std::string> args)
+#include <concepts>
+
+void virtualfilesystem::ListDirectoryCommand::handle_command(std::vector<std::string> args)
 {
-    for (Node node : m_filesystem.GetNodeList())
+    for (auto node : m_filesystem.GetNodeList())
     {
-        m_outputhandler.print_line(node.name);
+        if (node->GetNodeType() == NodeType::Directory)
+        {
+            m_outputhandler.set_color(io::color::BLUE);
+            m_outputhandler << node->name;
+            m_outputhandler.set_color(io::color::WHITE);
+            m_outputhandler << "/ ";
+            m_outputhandler.set_color(io::color::BLUE);
+            m_outputhandler << std::to_string(node->size) << "\n";
+        }
+        else if (node->GetNodeType() == NodeType::File)
+        {
+            m_outputhandler.set_color(io::color::WHITE);
+        }
+       
+        
+        m_outputhandler.set_color(io::color::RESET);
     }
 }

@@ -37,7 +37,8 @@ void Gui::run()
     std::map<std::string, std::unique_ptr<virtualfilesystem::ICommand>> commandMap;
     commandMap["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
     commandMap["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
-    // commandMap["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system);
+    commandMap["ls"] =
+        std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system, output_handler);
 
     virtualfilesystem::CommandManager commandmanager(std::move(commandMap));
 
@@ -46,7 +47,16 @@ void Gui::run()
     std::string typedline;
     std::string currentdirectory = "root";
 
+
+    //testing
+    commandmanager.execute_line("mkdir bob");
+    commandmanager.execute_line("mkdir john");
+    commandmanager.execute_line("mkdir betty");
+    commandmanager.execute_line("ls");
+    
     output_handler.print(currentdirectory + PROMPT);
+
+
 
     while (true)
     {
@@ -55,7 +65,7 @@ void Gui::run()
         if (is_enter(ch))
         {  // execute command
 
-            output_handler.print_line("");
+            output_handler.print_line();
 
             if (typedline == "exit")
             {  // escape
@@ -65,24 +75,32 @@ void Gui::run()
 
             commandmanager.execute_line(typedline);
             typedline.clear();
-        }
-        else if (is_tab(ch))
-        {  // add rest of suggestion
 
-            typedline += commandmanager.get_suggestion(typedline);
-        }
-        else if (is_backspace(ch))
-        {  // remove letter
-
-            if (!typedline.empty())
-                typedline.pop_back();
+            output_handler.print(currentdirectory + PROMPT);
         }
         else
-        {  // add letter
-            typedline.push_back(ch);
-        }
+        {
+            if (is_tab(ch))
+            {  // add rest of suggestion
 
-        std::string suggestion = commandmanager.get_suggestion(typedline);
-        output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);
+                typedline += commandmanager.get_suggestion(typedline);
+            }
+            else if (is_backspace(ch))
+            {  // remove letter
+
+                if (!typedline.empty())
+                    typedline.pop_back();
+            }
+            else
+            {  // add letter
+                typedline.push_back(ch);
+            }
+
+            std::string suggestion = commandmanager.get_suggestion(typedline);
+            output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);
+        }
+       
+
+       
     }
 }

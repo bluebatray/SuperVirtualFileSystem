@@ -15,7 +15,7 @@ class ListDirectoryCommand : public ICommand
     {
     }
 
-    void HandleCommand(std::vector<std::string> args) override;
+    void handle_command(std::vector<std::string> args) override;
 
    private:
     FileSystem& m_filesystem;

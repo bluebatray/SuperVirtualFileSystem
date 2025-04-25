@@ -10,7 +10,7 @@ class MakeDirectoryCommand : public ICommand
 {
    public:
     MakeDirectoryCommand(FileSystem& filesystem) : m_fileSystem(filesystem) {}
-    void HandleCommand(std::vector<std::string> args) override;
+    void handle_command(std::vector<std::string> args) override;
 
    private:
     FileSystem& m_fileSystem;

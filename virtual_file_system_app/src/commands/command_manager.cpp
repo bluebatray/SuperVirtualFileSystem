@@ -27,8 +27,20 @@ void CommandManager::execute_line(const std::string& line)
 
     if (!parsedValues.empty() && m_command_map.contains(parsedValues[0]))
     {
-        std::vector<std::string> args(&parsedValues[1], &parsedValues[parsedValues.size() - 1] + 1);
-        m_command_map[parsedValues[0]]->HandleCommand(args);
+       
+        if (parsedValues.size() > 1)
+        {
+            std::vector<std::string> args(&parsedValues[1], &parsedValues[parsedValues.size() - 1] + 1);
+            m_command_map[parsedValues[0]]->handle_command(args);
+        }
+        else
+        {
+            std::vector<std::string> args;
+            m_command_map[parsedValues[0]]->handle_command(args);
+        }
+
+         
+        
     }
 }
 
@@ -59,7 +71,7 @@ std::vector<std::string> CommandManager::parse_line_to_vector(const std::string&
         if (ch == ' ')
         {
             parsedValues.push_back(line.substr(beginIndex, endLength));
-            beginIndex += endLength;
+            beginIndex += endLength+1; //add 1 to move past space
             endLength = 0;
         }
 

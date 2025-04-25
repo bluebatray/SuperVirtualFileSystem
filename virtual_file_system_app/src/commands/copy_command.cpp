@@ -5,7 +5,7 @@
 
 namespace virtualfilesystem
 {
-void CopyCommand::HandleCommand(std::vector<std::string> args)
+void CopyCommand::handle_command(std::vector<std::string> args)
 {
     std::cout << " handle copy command " << "\n";
 

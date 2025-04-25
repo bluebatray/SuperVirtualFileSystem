@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "directory.hpp"
+#include "file.hpp"
 
 namespace virtualfilesystem
 {
@@ -21,7 +22,9 @@ class FileSystem
     FileSystem();
     FileSystem(const std::string& serializedFileSystemPath);
 
-    std::vector<Node> GetNodeList();
+    std::vector<std::shared_ptr<Node>> GetNodeList() const;
+
+    //std::vector<std::unique_ptr<Node>> GetNodeList();
     ErrorCode MakeDir(const std::string& filex);
     ErrorCode CopyFile(const std::string& fileX, const std::string& fileY);
 

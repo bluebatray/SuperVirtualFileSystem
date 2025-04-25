@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "node_type.hpp"
+
 namespace virtualfilesystem
 {
 
@@ -14,6 +16,9 @@ struct Node
         : name(std::move(_name)), size(_size), creationTime(_creationTime)
     {
     }
+
+    virtual NodeType GetNodeType() const = 0;
+
     std::string name;
     long long size;
     std::time_t creationTime;

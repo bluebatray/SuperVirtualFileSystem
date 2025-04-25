@@ -8,7 +8,7 @@
 namespace io
 {
 
-void ConsoleOutput::SetColor(int color)
+void ConsoleOutput::set_color(int color)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
@@ -26,26 +26,31 @@ void ConsoleOutput::SetColor(int color)
 
 #endif
 
-void ConsoleOutput::print(const std::string& message)
+void ConsoleOutput::print(const std::string& message) const
 {
     std::cout << message;
 }
 
+void ConsoleOutput::print_line()
+{
+    std::cout << std::endl;
+}
+
 void ConsoleOutput::print_line(const std::string& message)
 {
-    std::cout << message << std::endl;
+    std::cout << message << '\n';
 }
 
 void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& input,
                                  const std::string& suggested)
 {
-    std::cout << "\r" << prompt;  // Reset cursor position
+    std::cout << '\r' << prompt;  // Reset cursor position
 
     // Print typed input in white
 #ifdef _WIN32
-    SetColor(WHITE_COLOR);
+    set_color(io::color::WHITE);
 #else
-    std::cout << WHITE;
+    std::cout << io::Color::WHITE;
 #endif
     std::cout << input;
 
@@ -53,18 +58,18 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
     if (!suggested.empty())
     {
 #ifdef _WIN32
-        SetColor(GRAY_COLOR);
+        set_color(io::color::GRAY);
 #else
-        std::cout << GRAY;
+        std::cout << io::Color::GRAY;
 #endif
         std::cout << suggested;
     }
 
     // Reset color back to normal
 #ifdef _WIN32
-    SetColor(RESET_COLOR);
+    set_color(io::color::RESET);
 #else
-    std::cout << RESET;
+    std::cout << io::Color::RESET;
 #endif
 
     // Clear remaining characters if previous input was longer

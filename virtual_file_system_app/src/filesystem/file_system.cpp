@@ -18,16 +18,32 @@ FileSystem::FileSystem(const std::string& serializedFileSystemPath)
     // todo
 }
 
-std::vector<Node> FileSystem::GetNodeList()
+std::vector<std::shared_ptr<Node>> FileSystem::GetNodeList() const
 {
-    std::vector<Node> nodeList;
+    std::vector<std::shared_ptr<Node>> result;
+
+    for (const auto& dir : currentDirectory->directoryList)
+    {
+        result.push_back(dir);  // upcast to Node
+    }
+
+    for (const auto& file : currentDirectory->fileList)
+    {
+        result.push_back(file);  // upcast to Node
+    }
+
+    return result;
+
+    //return currentDirectory->directoryList;
+
+  /*  std::vector<Node> nodeList;
 
     for (const auto& pair : currentDirectory->directoryMap)
     {
         nodeList.push_back(pair.first);
     }
 
-    return nodeList;
+    return nodeList;*/
 }
 
 // todo check and make sure dir isn't nested (just name)
@@ -41,10 +57,11 @@ ErrorCode FileSystem::MakeDir(const std::string& dirName)
     {
         return ErrorCode(ErrorCode::Fail);
     }
-    auto newDirectory = std::make_shared<Directory>("dirName", 0LL, GetCurrentEpoch(),
+    std::shared_ptr<Directory> newDirectory = std::make_shared<Directory>(dirName, 0LL, GetCurrentEpoch(),
                                                     std::weak_ptr<Directory>(currentDirectory));
 
     currentDirectory->directoryMap.emplace(dirName, newDirectory);
+    currentDirectory->directoryList.push_back(newDirectory);
 
     return ErrorCode(ErrorCode::Success);
 }
