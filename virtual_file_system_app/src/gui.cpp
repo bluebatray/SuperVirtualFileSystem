@@ -10,6 +10,7 @@
 #include "commands/copy_command.hpp"
 #include "commands/list_directory_command.hpp"
 #include "commands/make_directory_command.hpp"
+#include "commands/prompt_command.hpp"
 
 #include "filesystem/file_system.hpp"
 
@@ -37,8 +38,8 @@ void Gui::run()
     std::map<std::string, std::unique_ptr<virtualfilesystem::ICommand>> commandMap;
     commandMap["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
     commandMap["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
-    commandMap["ls"] =
-        std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system, output_handler);
+    commandMap["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system, output_handler);
+    commandMap[""] = std::make_unique<virtualfilesystem::PromptCommand>(file_system, output_handler);
 
     virtualfilesystem::CommandManager commandmanager(std::move(commandMap));
 
@@ -49,15 +50,11 @@ void Gui::run()
 
 
     //testing
-    commandmanager.execute_line("mkdir bob");
-    commandmanager.execute_line("mkdir john");
-    commandmanager.execute_line("mkdir betty");
+    commandmanager.execute_line("mkdir folder1");
+    commandmanager.execute_line("mkdir folder2");
     commandmanager.execute_line("ls");
+    commandmanager.execute_line("");
     
-    output_handler.print(currentdirectory + PROMPT);
-
-
-
     while (true)
     {
         const char ch = input_handler.read_char();
@@ -76,7 +73,6 @@ void Gui::run()
             commandmanager.execute_line(typedline);
             typedline.clear();
 
-            output_handler.print(currentdirectory + PROMPT);
         }
         else
         {

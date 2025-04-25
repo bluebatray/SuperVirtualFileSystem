@@ -1,6 +1,7 @@
 #include "console_output.hpp"
 
 #include <iostream>
+#include <locale>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -10,8 +11,12 @@ namespace io
 
 void ConsoleOutput::set_color(int color)
 {
+#ifdef _WIN32
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
+#else
+    std::cout << color;
+#endif
 }
 
 #define RESET_COLOR 7
@@ -25,6 +30,11 @@ void ConsoleOutput::set_color(int color)
 #define GRAY "\033[90m"
 
 #endif
+
+ConsoleOutput::ConsoleOutput()
+{
+    std::cout.imbue(std::locale());
+}
 
 void ConsoleOutput::print(const std::string& message) const
 {

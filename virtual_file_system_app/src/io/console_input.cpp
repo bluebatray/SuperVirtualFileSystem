@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include <windows.h>
+#ifdef _WIN32
+#include <windows.h> 
+#endif
 
 namespace io
 {
@@ -19,8 +21,10 @@ bool ConsoleInput::read(std::string& input)
     return !input.empty();
 }
 
+// todo make non windows version
 char ConsoleInput::read_char()
 {
+#ifdef _WIN32
     char ch = 0;
     DWORD mode, count;
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
@@ -37,5 +41,7 @@ char ConsoleInput::read_char()
     SetConsoleMode(hInput, mode);
 
     return ch;
+#endif
+
 }
 }  // namespace io

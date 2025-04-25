@@ -10,6 +10,7 @@ namespace io
 class ConsoleOutput : public IOutputHandler
 {
    public:
+    ConsoleOutput();
     void print(const std::string& message) const override;
     void print_line() override;
     void print_line(const std::string& message) override;

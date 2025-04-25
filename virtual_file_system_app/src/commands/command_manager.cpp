@@ -37,10 +37,7 @@ void CommandManager::execute_line(const std::string& line)
         {
             std::vector<std::string> args;
             m_command_map[parsedValues[0]]->handle_command(args);
-        }
-
-         
-        
+        }       
     }
 }
 

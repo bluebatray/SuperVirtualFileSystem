@@ -37,6 +37,9 @@ class FileSystem
         cat X - print contents of a file named X
         ls - print files and directoriers in the current working directory
         stat X - prints metadata of a directory / file*/
+    std::shared_ptr<Directory> currentDirectory;
+
+    const std::string seperator_symbol = "/";
 
    private:
     std::expected<std::shared_ptr<Directory>, ErrorCode> GetDirectory(const std::string& path);
@@ -44,10 +47,9 @@ class FileSystem
     long long GetCurrentEpoch();
 
     std::shared_ptr<Directory> root;
-    std::shared_ptr<Directory> currentDirectory;
+    
 
-    const std::string root_symbol = ".";
-    const std::string seperator_symbol = "/";
+    const std::string root_symbol = "~";
     const std::string parent_directory_symbol = "..";
 };
 
