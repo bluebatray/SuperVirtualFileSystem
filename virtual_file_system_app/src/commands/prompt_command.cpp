@@ -3,6 +3,6 @@
 void virtualfilesystem::PromptCommand::handle_command(std::vector<std::string> args)
 {
     m_outputhandler.set_color(io::color::YELLOW);
-    m_outputhandler << m_fileSystem.currentDirectory->name << m_fileSystem.seperator_symbol << " > ";
+    m_outputhandler << m_filesystem.currentDirectory->name << m_filesystem.seperator_symbol << " > ";
     m_outputhandler.set_color(io::color::RESET);
 }

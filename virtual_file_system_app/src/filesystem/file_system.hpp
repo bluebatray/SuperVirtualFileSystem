@@ -26,6 +26,7 @@ class FileSystem
 
     //std::vector<std::unique_ptr<Node>> GetNodeList();
     ErrorCode MakeDir(const std::string& filex);
+    ErrorCode MakeFile(const std::string& filex, const std::string& fileText);
     ErrorCode CopyFile(const std::string& fileX, const std::string& fileY);
 
     // cp X Y - copy a file or a directory from path X to path Y

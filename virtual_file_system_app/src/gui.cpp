@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "commands/command_manager.hpp"
+
 #include "virtual_file_system_lib.hpp"
 
 // commands
@@ -11,21 +11,8 @@
 #include "commands/list_directory_command.hpp"
 #include "commands/make_directory_command.hpp"
 #include "commands/prompt_command.hpp"
+#include "commands/make_file_command.hpp"
 
-#include "filesystem/file_system.hpp"
-
-static constexpr auto is_enter(const char ch) -> bool
-{
-    return ch == 13 || ch == '\n';
-}
-static constexpr auto is_tab(const char ch) -> bool
-{
-    return ch == 9 || ch == '\t';
-}
-static constexpr auto is_backspace(const char ch) -> bool
-{
-    return ch == 127 || ch == '\b';
-}
 
 const std::string PROMPT = " > ";
 
@@ -33,11 +20,10 @@ void Gui::run()
 {
     virtualfilesystem::FileSystem file_system;
 
-    // todo fix listdirectorycommand consutrctor
-
     std::map<std::string, std::unique_ptr<virtualfilesystem::ICommand>> commandMap;
     commandMap["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
     commandMap["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
+    commandMap["create"] = std::make_unique<virtualfilesystem::MakeFileCommand>(file_system);
     commandMap["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system, output_handler);
     commandMap[""] = std::make_unique<virtualfilesystem::PromptCommand>(file_system, output_handler);
 
@@ -52,51 +38,48 @@ void Gui::run()
     //testing
     commandmanager.execute_line("mkdir folder1");
     commandmanager.execute_line("mkdir folder2");
+    commandmanager.execute_line("create file1 your mother");
     commandmanager.execute_line("ls");
     commandmanager.execute_line("");
     
+    //maybe have enter/tab as commands?
+
     while (true)
     {
-        const char ch = input_handler.read_char();
+        io::InputEvent inputEvent = input_handler.read_event();
 
-        if (is_enter(ch))
+      
+        if (inputEvent.type == io::InputEventType::Enter)
         {  // execute command
 
             output_handler.print_line();
 
-            if (typedline == "exit")
-            {  // escape
-                output_handler.print_line("exiting...");
+            //if true, exit out of loop
+            if (commandmanager.execute_line(typedline))
                 break;
-            }
-
-            commandmanager.execute_line(typedline);
+            
             typedline.clear();
 
+            continue;
         }
-        else
+        
+        //not command, so let's handle suggestions
+        switch (inputEvent.type)
         {
-            if (is_tab(ch))
-            {  // add rest of suggestion
-
+            case io::InputEventType::Tab:
                 typedline += commandmanager.get_suggestion(typedline);
-            }
-            else if (is_backspace(ch))
-            {  // remove letter
-
+                break;
+            case io::InputEventType::Backspace:
                 if (!typedline.empty())
                     typedline.pop_back();
-            }
-            else
-            {  // add letter
-                typedline.push_back(ch);
-            }
-
-            std::string suggestion = commandmanager.get_suggestion(typedline);
-            output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);
+                break;
+            case io::InputEventType::Character:
+                typedline.push_back(inputEvent.character);
+                break;
         }
-       
 
-       
+        std::string suggestion = commandmanager.get_suggestion(typedline);
+        output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);
     }
 }
+

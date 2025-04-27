@@ -21,24 +21,16 @@ CommandManager::CommandManager(std::map<std::string, std::unique_ptr<ICommand>>&
     this->m_command_map = std::move(command_map);
 }
 
-void CommandManager::execute_line(const std::string& line)
+bool CommandManager::execute_line(const std::string& line)
 {
-    std::vector parsedValues = parse_line_to_vector(line);
+    auto [command, commandArgs] = split_command(line);
+    
+    if (command == "exit")
+        return true;
 
-    if (!parsedValues.empty() && m_command_map.contains(parsedValues[0]))
-    {
-       
-        if (parsedValues.size() > 1)
-        {
-            std::vector<std::string> args(&parsedValues[1], &parsedValues[parsedValues.size() - 1] + 1);
-            m_command_map[parsedValues[0]]->handle_command(args);
-        }
-        else
-        {
-            std::vector<std::string> args;
-            m_command_map[parsedValues[0]]->handle_command(args);
-        }       
-    }
+    m_command_map[command]->handle_command(commandArgs);
+
+    return false;
 }
 
 std::string CommandManager::get_suggestion(const std::string& prefix)
@@ -54,6 +46,14 @@ std::string CommandManager::get_suggestion(const std::string& prefix)
 
     // return suggestion (only what's left from what's already typed)
     return suggested.substr(found + prefix.length(), suggested.length() - prefix.length());
+}
+
+void CommandManager::handle_suggestion(const std::string& typedline)
+{
+
+  /*  std::string suggestion = get_suggestion(typedline);
+    output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);*/
+
 }
 
 std::vector<std::string> CommandManager::parse_line_to_vector(const std::string& line)
@@ -78,6 +78,32 @@ std::vector<std::string> CommandManager::parse_line_to_vector(const std::string&
     parsedValues.push_back(line.substr(beginIndex, endLength));
 
     return parsedValues;
+}
+
+std::pair<std::string, std::vector<std::string>> CommandManager::split_command(const std::string& line)
+{
+    std::vector<std::string> parsedValues;
+
+    int beginIndex = 0;
+    int endLength = 0;
+
+    for (char ch : line)
+    {
+        if (ch == ' ')
+        {
+            parsedValues.push_back(line.substr(beginIndex, endLength));
+            beginIndex += endLength + 1;  // add 1 to move past space
+            endLength = 0;
+        }
+
+        endLength++;
+    }
+
+    parsedValues.push_back(line.substr(beginIndex, endLength));
+
+    if (parsedValues.empty())
+        return {"", {}};
+    return {parsedValues[0], {parsedValues.begin() + 1, parsedValues.end()}};
 }
 
 }  // namespace virtualfilesystem

@@ -66,6 +66,14 @@ ErrorCode FileSystem::MakeDir(const std::string& dirName)
     return ErrorCode(ErrorCode::Success);
 }
 
+ErrorCode FileSystem::MakeFile(const std::string& filex, const std::string& fileText)
+{
+
+
+    return ErrorCode(ErrorCode::Success);
+}
+
+
 ErrorCode FileSystem::CopyFile(const std::string& fileX, const std::string& fileY)
 {
     // 1. check if fileX exists, if so get it

@@ -44,4 +44,19 @@ char ConsoleInput::read_char()
 #endif
 
 }
+InputEvent ConsoleInput::read_event()
+{
+    const char ch = read_char();
+
+    if (ch == 13 || ch == '\n')
+        return InputEvent(InputEventType::Enter,  NULL);
+
+     if (ch == 9 || ch == '\t')
+        return InputEvent(InputEventType::Tab, NULL);
+     if (ch == 127 || ch == '\b')
+         return InputEvent(InputEventType::Backspace, NULL);
+        
+    return InputEvent(InputEventType::Character, ch);
+}
+
 }  // namespace io

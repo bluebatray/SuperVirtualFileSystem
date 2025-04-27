@@ -2,8 +2,10 @@
 
 #include <memory>
 
+#include "filesystem/file_system.hpp"
 #include "io/i_input_handler.hpp"
 #include "io/i_output_handler.hpp"
+#include "commands/command_manager.hpp"
 
 class Gui
 {
@@ -15,6 +17,7 @@ class Gui
     void run();
 
    private:
+
     io::IInputHandler& input_handler;
     io::IOutputHandler& output_handler;
 };

@@ -10,17 +10,25 @@
 namespace virtualfilesystem
 {
 
+enum FileSystemCommand
+{
+    CreateDirectory
+};
+
 class CommandManager
 {
    public:
     CommandManager(std::map<std::string, std::unique_ptr<ICommand>>&& command_map);
 
-    void execute_line(const std::string& line);
+    bool execute_line(const std::string& line);
     std::string get_suggestion(const std::string& input);
+    void handle_suggestion(const std::string& input);
 
    private:
     std::vector<std::string> parse_line_to_vector(const std::string& line);
     std::map<std::string, std::unique_ptr<ICommand>> m_command_map;
+
+    std::pair<std::string, std::vector<std::string>> split_command(const std::string& line);
 };
 
 }  // namespace virtualfilesystem

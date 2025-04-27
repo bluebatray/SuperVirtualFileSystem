@@ -12,5 +12,6 @@ class ConsoleInput : public IInputHandler
     bool read_line(std::string&) override;
     bool read(std::string&) override;
     char read_char() override;
+    InputEvent read_event() override;
 };
 }  // namespace io
