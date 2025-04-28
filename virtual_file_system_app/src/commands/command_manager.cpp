@@ -1,36 +1,29 @@
 #include "command_manager.hpp"
 
-#include "copy_command.hpp"
-#include "i_command.hpp"
-#include "list_directory_command.hpp"
-#include "make_directory_command.hpp"
+#include <memory>
+#include "commands.hpp"
+
 
 namespace virtualfilesystem
 {
 
-// CommandManager::CommandManager() : m_filesystem(), m_outputhandler() { //setup default commands
-//	this->m_command_map = {
-//		{"cp", new CopyCommand(m_filesystem)},
-//		{"mkdir", new MakeDirectoryCommand(m_filesystem)},
-//		{"ls", new ListDirectoryCommand(m_filesystem, m_outputhandler)}
-//	};
-// }
 
-CommandManager::CommandManager(std::map<std::string, std::unique_ptr<ICommand>>&& command_map)
+CommandManager::CommandManager(io::IOutputHandler& output_handler)
 {
-    this->m_command_map = std::move(command_map);
+    m_command_map["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
+    m_command_map["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
+    m_command_map["create"] = std::make_unique<virtualfilesystem::MakeFileCommand>(file_system);
+    m_command_map["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system);
 }
 
-bool CommandManager::execute_line(const std::string& line)
+CommandResult CommandManager::execute_line(const std::string& line)
 {
     auto [command, commandArgs] = split_command(line);
     
     if (command == "exit")
-        return true;
+        return CommandResult(CommandResultType::Exit, {});
 
-    m_command_map[command]->handle_command(commandArgs);
-
-    return false;
+    return m_command_map[command]->handle_command(commandArgs);
 }
 
 std::string CommandManager::get_suggestion(const std::string& prefix)
@@ -54,6 +47,11 @@ void CommandManager::handle_suggestion(const std::string& typedline)
   /*  std::string suggestion = get_suggestion(typedline);
     output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);*/
 
+}
+
+const std::string& CommandManager::get_current_directory_name() const
+{
+    return file_system.currentDirectory->name;
 }
 
 std::vector<std::string> CommandManager::parse_line_to_vector(const std::string& line)
@@ -95,8 +93,11 @@ std::pair<std::string, std::vector<std::string>> CommandManager::split_command(c
             beginIndex += endLength + 1;  // add 1 to move past space
             endLength = 0;
         }
-
-        endLength++;
+        else
+        {
+            endLength++;
+        }
+        
     }
 
     parsedValues.push_back(line.substr(beginIndex, endLength));

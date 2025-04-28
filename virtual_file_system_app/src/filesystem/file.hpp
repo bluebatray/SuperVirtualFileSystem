@@ -11,14 +11,17 @@ class Directory;
 class File : public Node
 {
    public:
-    File(std::string _name, long long _size, std::time_t _creationTime,
+    File(std::string _name, std::string _contents, long long _size, std::time_t _creationTime,
          std::weak_ptr<Directory> _parentDirectory)
-        : Node(std::move(_name), _size, _creationTime), parentDirectory(std::move(_parentDirectory))
+        : Node(std::move(_name), _size, _creationTime), 
+        parentDirectory(std::move(_parentDirectory)),
+          contents(std::move(_contents))
     {
     }
 
     NodeType GetNodeType() const override { return NodeType::File; } 
 
     std::weak_ptr<Directory> parentDirectory;
+    std::string contents;
 };
 }  // namespace virtualfilesystem

@@ -13,7 +13,10 @@ struct Node
 {
    public:
     Node(std::string _name, long long _size = 0, std::time_t _creationTime = std::time(nullptr))
-        : name(std::move(_name)), size(_size), creationTime(_creationTime)
+        : name(std::move(_name)),
+          size(_size),
+          creationTime(_creationTime),
+          lastModifiedTime(_creationTime)
     {
     }
 
@@ -22,6 +25,7 @@ struct Node
     std::string name;
     long long size;
     std::time_t creationTime;
+    std::time_t lastModifiedTime;
 };
 
 }  // namespace virtualfilesystem

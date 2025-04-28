@@ -14,7 +14,7 @@ class CopyCommand : public ICommand
    public:
     CopyCommand(FileSystem& filesystem) : m_filesystem(filesystem) {}
 
-    void handle_command(std::vector<std::string> args) override;
+    CommandResult handle_command(std::vector<std::string> args) override;
 
    private:
     FileSystem& m_filesystem;

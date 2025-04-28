@@ -3,32 +3,12 @@
 #include <iostream>
 #include <string>
 
-
+#include "commands/command_result.hpp"
 #include "virtual_file_system_lib.hpp"
 
-// commands
-#include "commands/copy_command.hpp"
-#include "commands/list_directory_command.hpp"
-#include "commands/make_directory_command.hpp"
-#include "commands/prompt_command.hpp"
-#include "commands/make_file_command.hpp"
-
-
-const std::string PROMPT = " > ";
 
 void Gui::run()
 {
-    virtualfilesystem::FileSystem file_system;
-
-    std::map<std::string, std::unique_ptr<virtualfilesystem::ICommand>> commandMap;
-    commandMap["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
-    commandMap["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
-    commandMap["create"] = std::make_unique<virtualfilesystem::MakeFileCommand>(file_system);
-    commandMap["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system, output_handler);
-    commandMap[""] = std::make_unique<virtualfilesystem::PromptCommand>(file_system, output_handler);
-
-    virtualfilesystem::CommandManager commandmanager(std::move(commandMap));
-
     // printfilesysteminfo();
 
     std::string typedline;
@@ -36,18 +16,16 @@ void Gui::run()
 
 
     //testing
-    commandmanager.execute_line("mkdir folder1");
-    commandmanager.execute_line("mkdir folder2");
-    commandmanager.execute_line("create file1 your mother");
-    commandmanager.execute_line("ls");
-    commandmanager.execute_line("");
+    execute_and_print("mkdir folder1");
+    execute_and_print("mkdir folder2");
+    execute_and_print("create file1 text in file");
+    execute_and_print("ls");
     
-    //maybe have enter/tab as commands?
+    output_handler.redraw_input(get_prompt(), typedline, "");
 
     while (true)
     {
         io::InputEvent inputEvent = input_handler.read_event();
-
       
         if (inputEvent.type == io::InputEventType::Enter)
         {  // execute command
@@ -55,10 +33,17 @@ void Gui::run()
             output_handler.print_line();
 
             //if true, exit out of loop
-            if (commandmanager.execute_line(typedline))
+            virtualfilesystem::CommandResult commandResult = commandmanager.execute_line(typedline);
+
+            if (commandResult.type == virtualfilesystem::CommandResultType::Exit)
                 break;
             
+            if (commandResult.type == virtualfilesystem::CommandResultType::Success) {
+                print_result(commandResult);                
+            }
+
             typedline.clear();
+            output_handler.redraw_input(get_prompt(), typedline, "");
 
             continue;
         }
@@ -79,7 +64,27 @@ void Gui::run()
         }
 
         std::string suggestion = commandmanager.get_suggestion(typedline);
-        output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);
+        output_handler.redraw_input(get_prompt(), typedline, suggestion);
     }
+}
+
+void Gui::print_result(const virtualfilesystem::CommandResult& commandResult)
+{
+    for (const auto& token : commandResult.token.get_tokens())
+    {
+        output_handler.set_color(token.color);
+        output_handler.print(token.text);
+    }
+}
+
+void Gui::execute_and_print(const std::string& line)
+{
+   auto result = commandmanager.execute_line(line);
+   print_result(result);
+}
+
+std::string Gui::get_prompt()
+{
+    return commandmanager.get_current_directory_name() + "/ > ";
 }
 

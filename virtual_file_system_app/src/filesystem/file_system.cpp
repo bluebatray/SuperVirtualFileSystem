@@ -68,7 +68,13 @@ ErrorCode FileSystem::MakeDir(const std::string& dirName)
 
 ErrorCode FileSystem::MakeFile(const std::string& filex, const std::string& fileText)
 {
+    auto currentTime = GetCurrentEpoch();
 
+    std::shared_ptr<File> newFile =
+        std::make_shared<File>(filex, fileText, fileText.length(), currentTime, currentDirectory);
+                                        
+    currentDirectory->fileList.push_back(newFile);
+    currentDirectory->lastModifiedTime = currentTime;
 
     return ErrorCode(ErrorCode::Success);
 }

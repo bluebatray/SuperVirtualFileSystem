@@ -3,7 +3,13 @@
 #include <iostream>
 #include <string>
 
-void virtualfilesystem::MakeDirectoryCommand::handle_command(std::vector<std::string> args)
+namespace virtualfilesystem
+{
+CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args)
 {
     m_fileSystem.MakeDir(args[0]);
+
+    return CommandResult(CommandResultType::Success);
+}
+
 }

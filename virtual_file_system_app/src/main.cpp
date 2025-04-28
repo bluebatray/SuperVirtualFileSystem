@@ -1,4 +1,6 @@
-#include <iostream>
+#pragma once
+
+#include<iostream>
 
 #include "gui.hpp"
 #include "io/console_input.hpp"

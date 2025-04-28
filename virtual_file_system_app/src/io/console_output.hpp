@@ -17,8 +17,16 @@ class ConsoleOutput : public IOutputHandler
     void redraw_input(const std::string& prompt, const std::string& input,
                       const std::string& sugggested) override;
 
-    void set_color(int color) override;
-    
+    void set_color(Color color) override;
+    void print_prompt(const std::string& prompt);
+
+    private:
+#ifdef _WIN32
+    int get_mapped_color(Color color);
+#else
+    const char* get_mapped_color(Color color);
+#endif
 };
 
 }  // namespace io
+
