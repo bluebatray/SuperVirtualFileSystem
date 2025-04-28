@@ -10,11 +10,6 @@
 namespace virtualfilesystem
 {
 
-enum FileSystemCommand
-{
-    CreateDirectory
-};
-
 class CommandManager
 {
    public:
@@ -32,6 +27,8 @@ class CommandManager
     std::pair<std::string, std::vector<std::string>> split_command(const std::string& line);
 
     FileSystem file_system;
+    std::vector <std::string> suggestion_list;
+    std::vector <std::string> history_list;
 };
 
 }  // namespace virtualfilesystem
