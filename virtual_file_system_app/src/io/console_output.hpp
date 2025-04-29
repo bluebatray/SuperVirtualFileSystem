@@ -20,12 +20,8 @@ class ConsoleOutput : public IOutputHandler
     void set_color(Color color) override;
     void print_prompt(const std::string& prompt);
 
-    private:
-#ifdef _WIN32
-    int get_mapped_color(Color color);
-#else
-    const char* get_mapped_color(Color color);
-#endif
+   private:
+
 };
 
 }  // namespace io

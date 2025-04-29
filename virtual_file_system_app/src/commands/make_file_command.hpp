@@ -17,4 +17,6 @@ class MakeFileCommand : public ICommand
     FileSystem& m_filesystem;
 };
 
-}
+
+
+}  // namespace virtualfilesystem

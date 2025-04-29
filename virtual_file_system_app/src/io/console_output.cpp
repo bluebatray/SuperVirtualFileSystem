@@ -3,26 +3,13 @@
 #include <iostream>
 #include <locale>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 namespace io
 {
 
 void ConsoleOutput::set_color(Color color)
-{
-
-   
-int translatedColor = get_mapped_color(color);
-
-#ifdef _WIN32
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, translatedColor);
-#else
-    std::cout << translatedColor;
-#endif
-}
+{  
+     std::cout << "\033[" << static_cast<int>(color) << "m";
+ }
 
 void ConsoleOutput::print_prompt(const std::string& prompt)
 {
@@ -30,61 +17,6 @@ void ConsoleOutput::print_prompt(const std::string& prompt)
     set_color(Color::YELLOW);
     std::cout << prompt;  
 }
-
-
-#ifdef _WIN32
-int ConsoleOutput::get_mapped_color(Color color)
-{
-    switch (color)
-    {
-        case Color::RESET:
-            return 7;
-        case Color::WHITE:
-            return 15;
-        case Color::GRAY:
-            return 8;
-        case Color::BLUE:
-            return 9;
-        case Color::GREEN:
-            return 2;
-        case Color::TEAL:
-            return 11;
-        case Color::PURPLE:
-            return 5;
-        case Color::YELLOW:
-            return 6;
-    }
-    return 7;
-}
-
-#else
-
-const char* ConsoleOutput::get_mapped_color(Color color)
-{
-    switch (color)
-    {
-        case Color::RESET:
-            return "\033[0m";
-        case Color::WHITE:
-            return "\033[97m";
-        case Color::GRAY:
-            return "\033[90m";
-        case Color::BLUE:
-            return "\033[94m";
-        case Color::GREEN:
-            return "\033[32m";
-        case Color::TEAL:
-            return "\033[96m";
-        case Color::PURPLE:
-            return "\033[35m";
-        case Color::YELLOW:
-            return "\033[33m";
-    }
-    return "\033[0m";
-}
-
-#endif
-
 
 ConsoleOutput::ConsoleOutput()
 {

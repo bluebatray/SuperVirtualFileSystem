@@ -148,10 +148,7 @@ std::pair<std::string, std::vector<std::string>> CommandManager::split_command(c
     if (parsedValues.empty())
         return {"", {}};
 
-    if (parsedValues.size() == 1)
-        return {parsedValues[0], {}};
-
-    return {parsedValues[0], {parsedValues.begin() + 1, parsedValues.end()}};
+    return {parsedValues[0], {parsedValues.begin(), parsedValues.end()}};
 }
 
 }  // namespace virtualfilesystem

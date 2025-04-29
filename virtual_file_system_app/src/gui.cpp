@@ -38,7 +38,9 @@ void Gui::run()
             if (commandResult.type == virtualfilesystem::CommandResultType::Exit)
                 break;
             
-            if (commandResult.type == virtualfilesystem::CommandResultType::Success) {
+            if (commandResult.type == virtualfilesystem::CommandResultType::Invalid) {
+                print_result(commandResult);
+            }else if (commandResult.type == virtualfilesystem::CommandResultType::Success) {
                 print_result(commandResult);                
             }
 

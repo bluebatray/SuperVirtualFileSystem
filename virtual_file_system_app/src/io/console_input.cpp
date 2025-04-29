@@ -41,6 +41,7 @@ char ConsoleInput::read_char()
     SetConsoleMode(hInput, mode);
 
     return ch;
+
 #endif
 
 }
@@ -53,6 +54,7 @@ InputEvent ConsoleInput::read_event()
 
      if (ch == 9 || ch == '\t')
         return InputEvent(InputEventType::Tab, NULL);
+
      if (ch == 127 || ch == '\b')
          return InputEvent(InputEventType::Backspace, NULL);
         

@@ -1,15 +1,18 @@
 #include "make_file_command.hpp"
 
 #include <numeric>
+#include <sstream>
+
+#include "../helper/container_helper.hpp"
 
 namespace virtualfilesystem
 {
 
 CommandResult MakeFileCommand::handle_command(std::vector<std::string> args)
 {
+    std::string mergedArgs = helper::join(args.begin() + 2, args.end(), " ");
 
-    std::string mergedArgs = std::accumulate(args.begin() + 1, args.end(), std::string(" "));
-    m_filesystem.MakeFile(args[0], mergedArgs);
+    m_filesystem.MakeFile(args[1], mergedArgs);
 
     return CommandResult(CommandResultType::Success);
 }
