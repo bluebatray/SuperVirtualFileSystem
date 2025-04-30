@@ -6,6 +6,12 @@
 namespace io
 {
 
+ConsoleOutput::ConsoleOutput()
+{
+    std::cout.imbue(std::locale());
+    m_cursorPosition = 0;
+}
+
 void ConsoleOutput::set_color(Color color)
 {  
      std::cout << "\033[" << static_cast<int>(color) << "m";
@@ -18,9 +24,19 @@ void ConsoleOutput::print_prompt(const std::string& prompt)
     std::cout << prompt;  
 }
 
-ConsoleOutput::ConsoleOutput()
+void ConsoleOutput::move_insertion_point(int amount)
 {
-    std::cout.imbue(std::locale());
+    m_cursorPosition += amount;
+}
+
+void ConsoleOutput::set_insertion_point(int index)
+{
+    m_cursorPosition = index;
+}
+
+int ConsoleOutput::get_insertion_point()
+{
+    return m_cursorPosition;
 }
 
 void ConsoleOutput::print(const std::string& message) const
@@ -37,10 +53,6 @@ void ConsoleOutput::print_line(const std::string& message)
 {
     std::cout << message << '\n';
 }
-
-  /*printbuffer.set_color(Color::YELLOW);
-printbuffer << m_filesystem.currentDirectory->name << m_filesystem.seperator_symbol << " > ";
-printbuffer.set_color(Color::RESET);*/
 
 void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& input,
                                  const std::string& suggested)
@@ -78,8 +90,8 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
         std::cout << input;
     }
 
-    std::cout << "\033[" << (input.length() + prompt.length() + 1)
-              << "G";  // Move cursor back "
+    //std::cout << "\033[" << (prompt.length() + input.length() + 1) << "G";  // Move cursor back to end of typed part
+    std::cout << "\033[" << (prompt.length() + m_cursorPosition + 1) << "G";  // Move cursor back to end of typed part
 
     std::cout.flush();
     last_length = total_length;  // Update last known length

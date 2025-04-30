@@ -3,9 +3,10 @@
 #include <memory>
 #include <sstream>
 #include <cctype>
+#include <stack>
 
 #include "commands.hpp"
-
+#include "../helper/container_helper.hpp"
 
 namespace virtualfilesystem
 {
@@ -13,10 +14,13 @@ namespace virtualfilesystem
 
 CommandManager::CommandManager(io::IOutputHandler& output_handler)
 {
+    history_offset = 0;
+
     m_command_map["cp"] = std::make_unique<virtualfilesystem::CopyCommand>(file_system);
     m_command_map["mkdir"] = std::make_unique<virtualfilesystem::MakeDirectoryCommand>(file_system);
     m_command_map["create"] = std::make_unique<virtualfilesystem::MakeFileCommand>(file_system);
     m_command_map["ls"] = std::make_unique<virtualfilesystem::ListDirectoryCommand>(file_system);
+    m_command_map["cd"] = std::make_unique<virtualfilesystem::ChangeDirectoryCommand>(file_system);
 
     for (auto const& pair : m_command_map)
         suggestion_list.push_back(pair.first);
@@ -42,21 +46,7 @@ std::string CommandManager::get_suggestion(const std::string& prefix)
 {
     
     size_t found = std::string::npos;
-
-    
-
-    //for (auto directory : file_system.currentDirectory->directoryList)
-    //{
-    //    
-    //    found = directory->name.rfind(prefix);
-
-    //    if (found != std::string::npos)
-    //    {
-    //        return directory->name.substr(found + prefix.length(),
-    //                                      directory->name.length() - prefix.length());
-    //    }
-    //}
-
+ 
     // check commands
     for (std::string& possibleSuggestion : suggestion_list)
     {
@@ -69,22 +59,33 @@ std::string CommandManager::get_suggestion(const std::string& prefix)
         }        
     }
     
-
-
    return "";
 }
 
-void CommandManager::handle_suggestion(const std::string& typedline)
+const std::string& CommandManager::get_current_full_directory_path() const
 {
+    
+    return file_system.current_full_path;
+}
 
-  /*  std::string suggestion = get_suggestion(typedline);
-    output_handler.redraw_input(currentdirectory + PROMPT, typedline, suggestion);*/
+void CommandManager::increment_history_offset(int amount)
+{
+    history_offset += amount;
+
+    if (history_offset < 0)
+        history_offset = 0;
+    else if (history_offset > history_list.size())
+        history_offset = history_list.size();
 
 }
 
-const std::string& CommandManager::get_current_directory_name() const
-{
-    return file_system.currentDirectory->name;
+const std::string& CommandManager::get_history_suggestion()
+{    
+    //used to go back to cleared console after looking at history
+    if (history_offset == 0)
+        return "";
+
+    return history_list[history_list.size() - history_offset];
 }
 
 std::vector<std::string> CommandManager::parse_line_to_vector(const std::string& line)
@@ -150,5 +151,7 @@ std::pair<std::string, std::vector<std::string>> CommandManager::split_command(c
 
     return {parsedValues[0], {parsedValues.begin(), parsedValues.end()}};
 }
+
+
 
 }  // namespace virtualfilesystem

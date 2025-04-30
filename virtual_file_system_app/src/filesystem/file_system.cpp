@@ -3,14 +3,19 @@
 #include <algorithm>
 #include <chrono>
 
+#include "../helper/container_helper.hpp"
+
 namespace virtualfilesystem
 {
 
 FileSystem::FileSystem()
 {
-    root = std::make_shared<Directory>(root_symbol, 0LL, GetCurrentEpoch(),
+    root = std::make_shared<Directory>(root_symbol, 0LL, get_current_epoch(),
                                        std::weak_ptr<Directory>{});
     currentDirectory = root;
+    full_directory_structure.push_back(root_symbol_display);
+
+    calculate_full_path();
 }
 
 FileSystem::FileSystem(const std::string& serializedFileSystemPath)
@@ -33,31 +38,20 @@ std::vector<std::shared_ptr<Node>> FileSystem::GetNodeList() const
     }
 
     return result;
-
-    //return currentDirectory->directoryList;
-
-  /*  std::vector<Node> nodeList;
-
-    for (const auto& pair : currentDirectory->directoryMap)
-    {
-        nodeList.push_back(pair.first);
-    }
-
-    return nodeList;*/
 }
 
 // todo check and make sure dir isn't nested (just name)
-ErrorCode FileSystem::MakeDir(const std::string& dirName)
+ErrorCode FileSystem::make_directory(const std::string& dirName)
 {
     // check if directory already exists
-    auto dirResult = GetDirectory(dirName);
+    auto dirResult = get_directory(dirName);
 
     // if we have a directory, then it's made already, error out
     if (dirResult)
     {
-        return ErrorCode(ErrorCode::Fail);
+        return ErrorCode(ErrorCode::AlreadyExists);
     }
-    std::shared_ptr<Directory> newDirectory = std::make_shared<Directory>(dirName, 0LL, GetCurrentEpoch(),
+    std::shared_ptr<Directory> newDirectory = std::make_shared<Directory>(dirName, 0LL, get_current_epoch(),
                                                     std::weak_ptr<Directory>(currentDirectory));
 
     currentDirectory->directoryMap.emplace(dirName, newDirectory);
@@ -66,24 +60,25 @@ ErrorCode FileSystem::MakeDir(const std::string& dirName)
     return ErrorCode(ErrorCode::Success);
 }
 
-ErrorCode FileSystem::MakeFile(const std::string& filex, const std::string& fileText)
+ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fileText)
 {
-    auto currentTime = GetCurrentEpoch();
+    auto currentTime = get_current_epoch();
 
     std::shared_ptr<File> newFile =
         std::make_shared<File>(filex, fileText, fileText.length(), currentTime, currentDirectory);
                                         
     currentDirectory->fileList.push_back(newFile);
     currentDirectory->lastModifiedTime = currentTime;
+    currentDirectory->size += newFile->size;
 
     return ErrorCode(ErrorCode::Success);
 }
 
 
-ErrorCode FileSystem::CopyFile(const std::string& fileX, const std::string& fileY)
+ErrorCode FileSystem::copy_file(const std::string& fileX, const std::string& fileY)
 {
     // 1. check if fileX exists, if so get it
-    auto originResult = GetDirectory(fileX);
+    auto originResult = get_directory(fileX);
 
     if (!originResult)
     {
@@ -99,10 +94,76 @@ ErrorCode FileSystem::CopyFile(const std::string& fileX, const std::string& file
     return ErrorCode(ErrorCode::Success);
 }
 
-std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::GetDirectory(
-    const std::string& path)
+ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
 {
-    std::vector<std::string> directoryHierarchy = Split(path, seperator_symbol);
+    //split the directory up by seperator, step through each one and change to that directory (chain)
+    std::vector<std::string> directoryList =
+        helper::split_string(directoryFullName, seperator_symbol);
+
+    //if it's empty, there's no chaining going on, so just use the path given
+    if (directoryList.empty()) {
+        directoryList.push_back(directoryFullName);
+    }
+
+    //in case there is an error, we can revert back to what we had before
+    std::shared_ptr<Directory> oldCurrentDirectory = currentDirectory;
+
+    for (std::string directoryName : directoryList)
+    {
+        if (directoryName == parent_directory_symbol)
+        {
+            if (auto parent = currentDirectory->parentDirectory.lock())
+            {
+                currentDirectory = parent;
+
+                // check if we're deeper than root
+                if (full_directory_structure.size() > 1)
+                {
+                    full_directory_structure.pop_back();
+                }
+            }
+        }
+        else if (directoryName == root_symbol)
+        {
+            full_directory_structure.erase(full_directory_structure.begin() + 1,
+                                           full_directory_structure.end());
+            currentDirectory = root;
+        }
+        else
+        {
+            // split the path
+            bool found = false;
+
+            // actual directory, check current directory lists
+            for (auto directory : currentDirectory->directoryList)
+            {
+                if (directory->name == directoryName)
+                {
+                    full_directory_structure.push_back(directory->name);
+                    currentDirectory = directory;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                currentDirectory = oldCurrentDirectory;
+                return ErrorCode(ErrorCode::NotFound);
+            }
+                
+        }
+        
+    }
+
+    calculate_full_path();
+
+    return ErrorCode(ErrorCode::Success);
+}
+
+std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory( const std::string& path)
+{
+    std::vector<std::string> directoryHierarchy = split(path, seperator_symbol);
 
     if (directoryHierarchy.size() == 0)
         return std::unexpected(ErrorCode::Fail);
@@ -145,7 +206,7 @@ std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::GetDirectory(
     return tempCurrentDirectory;
 }
 
-std::vector<std::string> FileSystem::Split(std::string s, const std::string& delimiter)
+std::vector<std::string> FileSystem::split(std::string s, const std::string& delimiter)
 {
     std::vector<std::string> splitStringVector;
     size_t pos = 0;
@@ -164,8 +225,15 @@ std::vector<std::string> FileSystem::Split(std::string s, const std::string& del
     }
     return splitStringVector;
 }
-long long FileSystem::GetCurrentEpoch()
+long long FileSystem::get_current_epoch()
 {
     return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+}
+
+void FileSystem::calculate_full_path()
+{
+    current_full_path = helper::join(full_directory_structure.begin(),
+                                     full_directory_structure.end(),
+                                     seperator_symbol.c_str());
 }
 }  // namespace virtualfilesystem

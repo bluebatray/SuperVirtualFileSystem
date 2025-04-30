@@ -4,3 +4,4 @@
 #include "list_directory_command.hpp"
 #include "make_directory_command.hpp"
 #include "make_file_command.hpp"
+#include "change_directory_command.hpp"

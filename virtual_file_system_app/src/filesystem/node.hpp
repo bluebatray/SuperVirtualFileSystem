@@ -20,7 +20,7 @@ struct Node
     {
     }
 
-    virtual NodeType GetNodeType() const = 0;
+    virtual NodeType get_node_type() const = 0;
 
     std::string name;
     long long size;

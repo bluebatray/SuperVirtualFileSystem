@@ -17,19 +17,22 @@ public:
     }
 
     const std::vector<PrintToken> get_tokens() const { return tokens;}
-    void add_error(const std::string& desc, const std::string& command, const std::string& usage) 
+    void add_error(const std::string& desc, const std::string& command = "",
+                   const std::string& usage = "") 
     {
         set_color(Color::RED);
-        //printbuffer.add_error("Missing parameter", args[0], " NewDirectory");
-
         *this << "[Error] ";
-
         set_color(Color::WHITE);
         *this << desc << "\n";
 
-        *this << "Usage: ";
-        set_color(Color::YELLOW);
-        *this << command << " " <<  usage << "\n ";
+        if (!usage.empty())
+        {
+            *this << "Usage: ";
+            set_color(Color::YELLOW);
+            *this << command << " " << usage << "\n";
+        }
+
+        *this << "\n";
 
         set_color(Color::RESET);      
     }

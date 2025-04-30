@@ -22,11 +22,24 @@ CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args
 
         return CommandResult(CommandResultType::Invalid, printbuffer);
     } 
-       
-    //it's valid
-    m_fileSystem.MakeDir(args[1]);
+    
+    ErrorCode returnCode = m_fileSystem.make_directory(args[1]);
 
-    return CommandResult(CommandResultType::Success);
+    
+    // it's valid
+    if(returnCode == ErrorCode::Success)
+        return CommandResult(CommandResultType::Success);
+
+    //file system error
+    PrintBuffer printbuffer;
+
+    if (returnCode == ErrorCode::AlreadyExists) {
+        printbuffer.add_error("Directory already exists.");
+
+        return CommandResult(CommandResultType::Invalid, printbuffer);
+    }
+
+   
 }
 
 }

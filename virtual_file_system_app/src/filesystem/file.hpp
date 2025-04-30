@@ -19,7 +19,7 @@ class File : public Node
     {
     }
 
-    NodeType GetNodeType() const override { return NodeType::File; } 
+    NodeType get_node_type() const override { return NodeType::File; } 
 
     std::weak_ptr<Directory> parentDirectory;
     std::string contents;

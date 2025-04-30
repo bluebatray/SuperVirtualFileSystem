@@ -9,7 +9,7 @@ CommandResult CopyCommand::handle_command(std::vector<std::string> args)
 {
     PrintFileSystemInfo();
 
-    m_filesystem.CopyFile(args[0], args[1]);
+    m_filesystem.copy_file(args[0], args[1]);
 
     return CommandResult(CommandResultType::Success);
 }

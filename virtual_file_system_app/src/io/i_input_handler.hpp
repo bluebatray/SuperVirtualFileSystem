@@ -10,7 +10,13 @@ enum InputEventType
     Character,
     Enter,
     Tab,
-    Backspace
+    Backspace,
+    Unused,
+    UpArrow,
+    DownArrow,
+    LeftArrow,
+    RightArrow,
+    Delete
 };
 
 struct InputEvent
