@@ -6,7 +6,7 @@
 #include <conio.h>
 
 #ifdef _WIN32
-#include <windows.h> 
+#include <windows.h>
 #endif
 
 namespace io
@@ -26,12 +26,12 @@ bool ConsoleInput::read(std::string& input)
 // todo make non windows version
 char ConsoleInput::read_char()
 {
-    char c =  getch();
+    int c = _getch();
 
-     if (c && c != 224)
+    if (c && c != 224)
         return c;
 
-     return getch();
+    return _getch();
 
 #ifdef _WIN32
     char ch = 0;
@@ -52,42 +52,41 @@ char ConsoleInput::read_char()
     return ch;
 
 #endif
-
 }
 InputEvent ConsoleInput::read_event()
 {
-    char ch = getch();
+    char ch = _getch();
 
     if (ch == 13 || ch == '\n')
-        return InputEvent(InputEventType::Enter,  NULL);
+        return InputEvent(InputEventType::Enter, NULL);
 
-     if (ch == 9 || ch == '\t')
+    if (ch == 9 || ch == '\t')
         return InputEvent(InputEventType::Tab, NULL);
 
-     if (ch == 127 || ch == '\b')
-         return InputEvent(InputEventType::Backspace, NULL);
+    if (ch == 127 || ch == '\b')
+        return InputEvent(InputEventType::Backspace, NULL);
 
+    // special key
+    if (ch < 0)
+    {
+        ch = _getch();  // special keys have 2 parts, let's get the 2nd part and see what it is
 
-     //special key
-     if (ch < 0) {
-         ch = getch(); //special keys have 2 parts, let's get the 2nd part and see what it is
+        switch (ch)
+        {
+            case 72:  // arrow up
+                return InputEvent(InputEventType::UpArrow, NULL);
+            case 80:  // arrow down
+                return InputEvent(InputEventType::DownArrow, NULL);
+            case 75:  // arrow left
+                return InputEvent(InputEventType::LeftArrow, NULL);
+            case 77:  // arrow right
+                return InputEvent(InputEventType::RightArrow, NULL);
+            case 83:  // delete
+                return InputEvent(InputEventType::Delete, NULL);
+        }
 
-         switch (ch)
-         {
-             case 72:   //arrow up
-                 return InputEvent(InputEventType::UpArrow, NULL);
-             case 80:   //arrow down
-                 return InputEvent(InputEventType::DownArrow, NULL);
-             case 75:   //arrow left
-                 return InputEvent(InputEventType::LeftArrow, NULL);
-             case 77:   //arrow right
-                 return InputEvent(InputEventType::RightArrow, NULL);
-             case 83:   //delete
-                 return InputEvent(InputEventType::Delete, NULL);
-         }
-
-          return InputEvent(InputEventType::Unused, NULL);
-      }
+        return InputEvent(InputEventType::Unused, NULL);
+    }
 
     return InputEvent(InputEventType::Character, ch);
 }

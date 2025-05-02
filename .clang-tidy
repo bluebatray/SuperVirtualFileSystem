@@ -1,0 +1,12 @@
+Checks: >
+  clang-analyzer-*,            # Static analysis
+  bugprone-*,                  # Bug-prone patterns
+  performance-*,               # Performance suggestions
+  readability-*,               # Readability improvements
+  modernize-*,                 # Modern C++ suggestions
+  google-*                     # Google style checks
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'
+FormatStyle:     google
+CheckOptions: []

@@ -20,8 +20,9 @@ class Gui
     void execute_and_print(const std::string& line);
     std::string get_prompt();
 
-    virtualfilesystem::CommandManager commandmanager;
-
+  
     io::IInputHandler& input_handler;
     io::IOutputHandler& output_handler;
+
+    virtualfilesystem::CommandManager commandmanager;
 };

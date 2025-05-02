@@ -34,7 +34,7 @@ class FileSystem
 
     // cp X Y - copy a file or a directory from path X to path Y
     /*mv X Y - move(or rename) a file or a directory from path X to path Y
-        cd X - change the current working directory(or ..to go up a level)
+        ✓ cd X - change the current working directory(or ..to go up a level)
         ✓ mkdir X - create a directorynamed X
         rm X - remove a file named X or an empty directory named X
         ✓ create X File Text - create a file named X with contents "File Text"
@@ -48,6 +48,9 @@ class FileSystem
 
    private:
     std::expected<std::shared_ptr<Directory>, ErrorCode> get_directory(const std::string& path);
+    std::expected<std::pair<std::shared_ptr<Directory>, std::shared_ptr<File>>, ErrorCode>
+    split_file_path(const std::string& path);
+
     std::vector<std::string> split(std::string s, const std::string& delimiter);
     long long get_current_epoch();
 

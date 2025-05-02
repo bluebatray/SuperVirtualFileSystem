@@ -7,6 +7,7 @@
 
 #include "commands.hpp"
 #include "../helper/container_helper.hpp"
+#include "../helper/number.hpp"
 
 namespace virtualfilesystem
 {
@@ -31,40 +32,81 @@ CommandResult CommandManager::execute_line(const std::string& line)
     auto [command, commandArgs] = split_command(line);
     
     if (command == "exit")
-        return CommandResult(CommandResultType::Exit, {});
+        return CommandResult(CommandResultType::Exit);
 
     //add to history
+    if (history_list.size() >= MAX_HISTORY_SIZE)
+        history_list.pop_front();
+
     history_list.push_back(line);
 
     if (!m_command_map.contains(command))
-        return CommandResult(CommandResultType::Empty, {});
+    {
+        //if it's empty don't error it
+        if (command.empty())
+        {
+            return CommandResult(CommandResultType::Empty);
+        }
+        
+        std::ostringstream oss;
+        oss << "'" << command << "'" << " command not recognized.";
+        PrintBuffer printbuffer;
+        printbuffer.add_error(oss.str());
+        return CommandResult(CommandResultType::Empty, printbuffer);
+    }        
 
     return m_command_map[command]->handle_command(commandArgs);
 }
 
-std::string CommandManager::get_suggestion(const std::string& prefix)
+std::string CommandManager::get_suggestion(const std::string& line)
 {
     
-    size_t found = std::string::npos;
- 
-    // check commands
-    for (std::string& possibleSuggestion : suggestion_list)
-    {
-        found = possibleSuggestion.rfind(prefix);
-
-        if (found != std::string::npos)
-        {
-            return possibleSuggestion.substr(found + prefix.length(),
-                                            possibleSuggestion.length() - prefix.length());
-        }        
-    }
+    auto [command, commandArgs] = split_command(line);
     
-   return "";
+    if (command.empty())
+        return std::string();
+
+    size_t found = std::string::npos;
+
+    //if it's only command then check commands, otherwise directories and files
+    if (commandArgs.size() <= 1)
+    {
+        // check commands
+        for (std::string& possibleSuggestion : suggestion_list)
+        {
+            found = possibleSuggestion.find(line);
+
+            if (found == 0)
+            {
+                return possibleSuggestion.substr(line.length(),
+                                                 possibleSuggestion.length() - line.length());
+            }
+        }
+    }
+    else
+    {
+        //gets args only since we aren't dealing with command
+        std::string argsOnly = line.substr(command.length()+1);
+
+
+        for (std::shared_ptr<Node> nodePtr : file_system.GetNodeList())
+        {
+            found = nodePtr->name.find(argsOnly);
+
+            if (found == 0)
+            {
+                //argsOnly
+                return nodePtr->name.substr(argsOnly.length(),
+                                            nodePtr->name.length() - argsOnly.length());
+            }
+        }
+    }
+
+    return "";
 }
 
 const std::string& CommandManager::get_current_full_directory_path() const
 {
-    
     return file_system.current_full_path;
 }
 
@@ -74,16 +116,16 @@ void CommandManager::increment_history_offset(int amount)
 
     if (history_offset < 0)
         history_offset = 0;
-    else if (history_offset > history_list.size())
-        history_offset = history_list.size();
+    else if (history_offset > helper::safe_size_to_int(history_list.size()))
+        history_offset = helper::safe_size_to_int(history_list.size());
 
 }
 
-const std::string& CommandManager::get_history_suggestion()
+const std::string CommandManager::get_history_suggestion()
 {    
     //used to go back to cleared console after looking at history
     if (history_offset == 0)
-        return "";
+        return std::string();
 
     return history_list[history_list.size() - history_offset];
 }

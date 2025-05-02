@@ -1,5 +1,6 @@
 ﻿#include "list_directory_command.hpp"
 
+#include <time.h>
 #include <concepts>
 #include <iomanip>
 
@@ -14,17 +15,14 @@ CommandResult virtualfilesystem::ListDirectoryCommand::handle_command(std::vecto
 
     PrintBuffer printbuffer;
 
-    if (nodeList.empty()) {
-
+    if (nodeList.empty())
+    {
         printbuffer.set_color(Color::WHITE);
         printbuffer << "Directory is empty.\n\n";
         printbuffer.set_color(Color::RESET);
 
         return CommandResult(CommandResultType::Success, std::move(printbuffer));
     }
-
-
-    
 
     printbuffer << "\n";
     printbuffer.set_color(Color::GREEN);
@@ -33,13 +31,19 @@ CommandResult virtualfilesystem::ListDirectoryCommand::handle_command(std::vecto
 
     for (auto node : nodeList)
     {
-        std::tm localTime = *std::localtime(&node->lastModifiedTime);
+        std::tm localTime;
 
-         printbuffer.set_color(Color::WHITE);
+#ifdef _WIN32
+        localtime_s(&localTime, &node->lastModifiedTime);  // Windows
+#else
+        localtime_r(&node->lastModifiedTime, &localTime);  // POSIX (Linux/macOS)
+#endif
+
+        printbuffer.set_color(Color::WHITE);
         printbuffer << node->size << "\t" << std::put_time(&localTime, "%x %X") << "\t";
 
         if (node->get_node_type() == NodeType::Directory)
-        {           
+        {
             printbuffer.set_color(Color::BLUE);
             printbuffer << node->name;
             printbuffer.set_color(Color::WHITE);
@@ -48,18 +52,16 @@ CommandResult virtualfilesystem::ListDirectoryCommand::handle_command(std::vecto
         else if (node->get_node_type() == NodeType::File)
         {
             printbuffer.set_color(Color::WHITE);
-            printbuffer << node->name;           
+            printbuffer << node->name;
         }
 
-         printbuffer << "\n";
-         
+        printbuffer << "\n";
     }
 
     printbuffer.set_color(Color::RESET);
     printbuffer << "\n";
 
     return CommandResult(CommandResultType::Success, std::move(printbuffer));
-
 }
 
 }  // namespace virtualfilesystem

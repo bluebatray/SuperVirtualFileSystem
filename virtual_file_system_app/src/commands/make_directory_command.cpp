@@ -26,19 +26,21 @@ CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args
     ErrorCode returnCode = m_fileSystem.make_directory(args[1]);
 
     
-    // it's valid
-    if(returnCode == ErrorCode::Success)
-        return CommandResult(CommandResultType::Success);
+     if (returnCode == ErrorCode::AlreadyExists)
+    {
+        PrintBuffer printbuffer;
 
-    //file system error
-    PrintBuffer printbuffer;
-
-    if (returnCode == ErrorCode::AlreadyExists) {
         printbuffer.add_error("Directory already exists.");
 
         return CommandResult(CommandResultType::Invalid, printbuffer);
     }
 
+    // it's valid
+    if(returnCode == ErrorCode::Success)
+        return CommandResult(CommandResultType::Success);
+
+    //file system error
+    return CommandResult(CommandResultType::Invalid);
    
 }
 

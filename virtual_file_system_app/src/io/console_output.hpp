@@ -14,7 +14,8 @@ class ConsoleOutput : public IOutputHandler
     void print(const std::string& message) const override;
     void print_line() override;
     void print_line(const std::string& message) override;
-    void redraw_input(const std::string& prompt, const std::string& input, const std::string& sugggested) override;
+    void redraw_input(const std::string& prompt, const std::string& input = std::string(),
+                      const std::string& sugggested = std::string()) override;
 
     void set_color(Color color) override;
     void print_prompt(const std::string& prompt);
@@ -25,7 +26,7 @@ class ConsoleOutput : public IOutputHandler
        
 
    private:
-    size_t m_cursorPosition;
+    int m_cursorPosition;
 
 };
 

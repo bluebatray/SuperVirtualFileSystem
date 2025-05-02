@@ -17,6 +17,7 @@ public:
     }
 
     const std::vector<PrintToken> get_tokens() const { return tokens;}
+
     void add_error(const std::string& desc, const std::string& command = "",
                    const std::string& usage = "") 
     {

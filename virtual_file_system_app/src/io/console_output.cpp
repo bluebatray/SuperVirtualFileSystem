@@ -13,15 +13,15 @@ ConsoleOutput::ConsoleOutput()
 }
 
 void ConsoleOutput::set_color(Color color)
-{  
-     std::cout << "\033[" << static_cast<int>(color) << "m";
- }
+{
+    std::cout << "\033[" << static_cast<int>(color) << "m";
+}
 
 void ConsoleOutput::print_prompt(const std::string& prompt)
 {
-    std::cout << "\r"; // Reset cursor position
+    std::cout << "\r";  // Reset cursor position
     set_color(Color::YELLOW);
-    std::cout << prompt;  
+    std::cout << prompt;
 }
 
 void ConsoleOutput::move_insertion_point(int amount)
@@ -80,7 +80,7 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
 
     static size_t last_length = 0;  // Track previous input length
 
-    //if we have less characters now, we need to redraw and clear out the old area
+    // if we have less characters now, we need to redraw and clear out the old area
     if (total_length < last_length)
     {
         std::cout << std::string(last_length - total_length, ' ');  // Overwrite extra chars
@@ -90,12 +90,11 @@ void ConsoleOutput::redraw_input(const std::string& prompt, const std::string& i
         std::cout << input;
     }
 
-    //std::cout << "\033[" << (prompt.length() + input.length() + 1) << "G";  // Move cursor back to end of typed part
-    std::cout << "\033[" << (prompt.length() + m_cursorPosition + 1) << "G";  // Move cursor back to end of typed part
+    std::cout << "\033[" << (prompt.length() + m_cursorPosition + 1)
+              << "G";  // Move cursor back to end of typed part
 
     std::cout.flush();
     last_length = total_length;  // Update last known length
-
 }
 
-}
+}  // namespace io
