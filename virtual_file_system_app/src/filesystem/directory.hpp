@@ -2,7 +2,7 @@
 
 #include <map>
 #include <memory>
-#include <vector>
+#include <set>
 
 #include "node.hpp"
 
@@ -23,7 +23,7 @@ class Directory : public Node
     NodeType get_node_type() const override { return NodeType::Directory; }
     std::weak_ptr<Directory> parentDirectory;
     std::map<std::string, std::shared_ptr<Directory>> directoryMap;
-    std::vector<std::shared_ptr<File>> fileList;
-    std::vector<std::shared_ptr<Directory>> directoryList;
+    std::set<std::shared_ptr<File>> fileList;
+    std::set<std::shared_ptr<Directory>> directoryList;
 };
 }  // namespace virtualfilesystem

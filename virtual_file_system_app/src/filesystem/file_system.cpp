@@ -55,7 +55,7 @@ ErrorCode FileSystem::make_directory(const std::string& dirName)
         dirName, 0LL, get_current_epoch(), std::weak_ptr<Directory>(currentDirectory));
 
     currentDirectory->directoryMap.emplace(dirName, newDirectory);
-    currentDirectory->directoryList.push_back(newDirectory);
+    currentDirectory->directoryList.insert(newDirectory);
 
     return ErrorCode(ErrorCode::Success);
 }
@@ -68,7 +68,7 @@ ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fil
                                std::weak_ptr<Directory>(currentDirectory));
    /* File(std::string _name, std::string _contents, long long _size, std::time_t _creationTime,
          std::weak_ptr<Directory> _parentDirectory)*/
-    currentDirectory->fileList.push_back(newFile);
+    currentDirectory->fileList.insert(newFile);
     currentDirectory->lastModifiedTime = currentTime;
     currentDirectory->size += newFile->size;
 
@@ -83,13 +83,31 @@ ErrorCode FileSystem::copy_file(const std::string& fullfilepathX, const std::str
     // split directory and file so we can deal with them seperately
     int indexPathFileBreak = fullfilepathX.rfind(seperator_symbol);
 
-    std::string filename;
+    std::string filenameX;
+    //std::string directoryX;
+
+    std::shared_ptr<Directory> directoryX;
+
+
     if (indexPathFileBreak == std::string::npos){
-        filename = fullfilepathX;
+        filenameX = fullfilepathX;
+        directoryX = currentDirectory;
     }
     else {
-        filename = fullfilepathX.substr(indexPathFileBreak+1);
+        filenameX = fullfilepathX.substr(indexPathFileBreak+1);
+
+        auto result = get_directory(fullfilepathX.substr(0, indexPathFileBreak));
+
+        if (result) {
+            directoryX = result.value();
+        }
+        else {
+            return result.error();
+        }
     }
+
+    //check for file in directory
+    //directoryX->fileList.con
 
     
 
@@ -114,7 +132,7 @@ ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
     
     if (!result)
     {
-        return ErrorCode(result.error());
+        return result.error();
     }
 
     //valid, traverse and build the new structure
