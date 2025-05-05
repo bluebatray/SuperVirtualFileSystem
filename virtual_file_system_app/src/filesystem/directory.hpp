@@ -14,7 +14,7 @@ class File;
 class Directory : public Node
 {
    public:
-    Directory(const std::string& _name, long long _size, long long _creationTime,
+    Directory(const std::string& _name, long long _size, std::time_t _creationTime,
               std::weak_ptr<Directory> _parentDirectory)
         : Node(_name, _size, _creationTime), parentDirectory(std::move(_parentDirectory))
     {

@@ -10,6 +10,7 @@ namespace virtualfilesystem
 
 FileSystem::FileSystem()
 {
+    //static_assert(std::is_constructible_v<Directory, const std::string&, long long, std::time_t, std::weak_ptr<Directory>>);
     root = std::make_shared<Directory>(root_symbol_display, 0LL, get_current_epoch(), std::weak_ptr<Directory>{});
     currentDirectory = root;
     full_directory_structure.push_back(root_symbol_display);
@@ -62,10 +63,11 @@ ErrorCode FileSystem::make_directory(const std::string& dirName)
 ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fileText)
 {
     auto currentTime = get_current_epoch();
-
     std::shared_ptr<File> newFile =
-        std::make_shared<File>(filex, fileText, fileText.length(), currentTime, currentDirectory);
-
+        std::make_shared<File>(filex, fileText, fileText.length(), currentTime,
+                               std::weak_ptr<Directory>(currentDirectory));
+   /* File(std::string _name, std::string _contents, long long _size, std::time_t _creationTime,
+         std::weak_ptr<Directory> _parentDirectory)*/
     currentDirectory->fileList.push_back(newFile);
     currentDirectory->lastModifiedTime = currentTime;
     currentDirectory->size += newFile->size;
@@ -293,7 +295,7 @@ std::vector<std::string> FileSystem::split(std::string s, const std::string& del
     }
     return splitStringVector;
 }
-long long FileSystem::get_current_epoch()
+std::time_t FileSystem::get_current_epoch()
 {
     return std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }

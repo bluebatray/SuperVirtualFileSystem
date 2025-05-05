@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../filesystem/file_system.hpp"
-#include "i_command.hpp"
+#include "../../filesystem/file_system.hpp"
+#include "../i_command.hpp"
 #include <string>
 
 namespace virtualfilesystem

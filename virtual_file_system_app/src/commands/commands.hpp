@@ -1,7 +1,7 @@
 #pragma once
 
-#include "copy_command.hpp"
-#include "list_directory_command.hpp"
-#include "make_directory_command.hpp"
-#include "make_file_command.hpp"
-#include "change_directory_command.hpp"
+#include "commands/copy_command.hpp"
+#include "commands/list_directory_command.hpp"
+#include "commands/make_directory_command.hpp"
+#include "commands/make_file_command.hpp"
+#include "commands/change_directory_command.hpp"

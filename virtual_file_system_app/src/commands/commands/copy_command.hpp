@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "../filesystem/file_system.hpp"
-#include "i_command.hpp"
+#include "../../filesystem/file_system.hpp"
+#include "../i_command.hpp"
 
 namespace virtualfilesystem
 {

@@ -7,13 +7,13 @@ add_executable(VirtualFileSystem
     "src/gui.cpp" 
     "src/io/console_output.cpp"
     "src/io/console_input.cpp"
-    "src/commands/copy_command.cpp"
+    "src/commands/commands/copy_command.cpp"
  "src/commands/command_manager.cpp"
    "src/filesystem/file_system.cpp" 
-   "src/commands/make_directory_command.cpp" 
-   "src/commands/make_file_command.cpp" 
-   "src/commands/list_directory_command.cpp" 
-   "src/commands/change_directory_command.cpp")
+   "src/commands/commands/make_directory_command.cpp" 
+   "src/commands/commands/make_file_command.cpp" 
+   "src/commands/commands/list_directory_command.cpp" 
+   "src/commands/commands/change_directory_command.cpp")
 
 # Ensure VirtualFileSystem is properly defined before linking
 if (NOT TARGET VirtualFileSystem)

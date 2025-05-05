@@ -20,8 +20,9 @@ void Gui::run()
     execute_and_print("mkdir another1");
     execute_and_print("cd \"folder 1\"");
     execute_and_print("create file1 text in file");
-    execute_and_print("ls");
+    
     execute_and_print("cd ..");
+    execute_and_print("ls");
     
 
     std::string typedline;
@@ -56,6 +57,7 @@ void Gui::run()
 
 
         std::string suggestion;
+        int insertionPoint;
 
         switch (inputEvent.type)
         {
@@ -67,7 +69,7 @@ void Gui::run()
                 break;
             case io::InputEventType::Tab:
                 suggestion = commandmanager.get_suggestion(typedline);
-                int insertionPoint = helper::safe_size_to_int(typedline.length());
+                insertionPoint = helper::safe_size_to_int(typedline.length());
                 output_handler.move_insertion_point(insertionPoint);
                 typedline += suggestion;
                 suggestion = "";
@@ -98,7 +100,7 @@ void Gui::run()
                 commandmanager.increment_history_offset(1);
                 typedline = commandmanager.get_history_suggestion();
                 
-                int insertionPoint = helper::safe_size_to_int(typedline.length());
+                insertionPoint = helper::safe_size_to_int(typedline.length());
                 output_handler.set_insertion_point(insertionPoint);
 
                 break;
@@ -115,7 +117,7 @@ void Gui::run()
                 if (output_handler.get_insertion_point() == typedline.length())
                 {
                     suggestion = commandmanager.get_suggestion(typedline);
-                    int insertionPoint = helper::safe_size_to_int(typedline.length());
+                    insertionPoint = helper::safe_size_to_int(typedline.length());
                     output_handler.move_insertion_point(insertionPoint);
                     typedline += suggestion;
                     suggestion = "";

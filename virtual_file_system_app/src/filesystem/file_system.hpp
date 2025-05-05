@@ -52,7 +52,7 @@ class FileSystem
     split_file_path(const std::string& path);
 
     std::vector<std::string> split(std::string s, const std::string& delimiter);
-    long long get_current_epoch();
+    std::time_t get_current_epoch();
 
     std::shared_ptr<Directory> root;
     
