@@ -26,7 +26,7 @@ class FileSystem
 
     std::vector<std::shared_ptr<Node>> GetNodeList() const;
 
-    //std::vector<std::unique_ptr<Node>> GetNodeList();
+    // std::vector<std::unique_ptr<Node>> GetNodeList();
     ErrorCode make_directory(const std::string& filex);
     ErrorCode make_file(const std::string& filex, const std::string& fileText);
     ErrorCode copy_file(const std::string& fileX, const std::string& fileY);
@@ -55,14 +55,13 @@ class FileSystem
     std::time_t get_current_epoch();
 
     std::shared_ptr<Directory> root;
-    
+
     void calculate_full_path();
     std::vector<std::string> full_directory_structure;
 
     const std::string root_symbol = ".";
     const std::string root_symbol_display = "~";
-    const std::string parent_directory_symbol = "..";        
-
+    const std::string parent_directory_symbol = "..";
 };
 
 }  // namespace virtualfilesystem

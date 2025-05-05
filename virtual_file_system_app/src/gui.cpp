@@ -22,6 +22,7 @@ void Gui::run()
     execute_and_print("create file1 text in file");
     
     execute_and_print("cd ..");
+    execute_and_print("cp \"folder 1\"/file1 folder2/filecopy");
     execute_and_print("ls");
     
 

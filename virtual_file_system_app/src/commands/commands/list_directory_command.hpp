@@ -21,6 +21,13 @@ class ListDirectoryCommand : public ICommand
    private:
     long long get_digits(long long size);
     FileSystem& m_filesystem;
+
+    const std::string size_string = "Size";
+    const std::string modified_string = "Modified";
+    const std::string name_string = "Name";
+
+    int space_between = 4;
+
 };
 
 }  // namespace virtualfilesystem

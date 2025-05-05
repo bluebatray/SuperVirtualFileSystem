@@ -14,7 +14,7 @@ CommandResult virtualfilesystem::ListDirectoryCommand::handle_command(std::vecto
     std::vector<std::shared_ptr<Node>> nodeList = m_filesystem.GetNodeList();
     PrintBuffer printbuffer;
 
-    //if it's empty directory, exit out
+    // if it's empty directory, exit out
     if (nodeList.empty())
     {
         printbuffer.set_color(Color::WHITE);
@@ -23,53 +23,48 @@ CommandResult virtualfilesystem::ListDirectoryCommand::handle_command(std::vecto
 
         return CommandResult(CommandResultType::Success, std::move(printbuffer));
     }
-    
-    
-    //first go through list and find the biggest file, we will format text based on this
+
+    // first go through list and find the biggest file, we will format text based on this
     long long biggestFile = 0;
-    for (std::shared_ptr<Node> node : nodeList) {
+    for (std::shared_ptr<Node> node : nodeList)
+    {
         if (node->size > biggestFile)
             biggestFile = node->size;
     }
 
     int numDigitsOfBiggestFile = get_digits(biggestFile);
     int dateSize = format_time(nodeList[0]->lastModifiedTime).length();
-   
+
     // headers
-    std::string sizeString = "Size";
-    std::string modifiedString = "Modified";
-    std::string nameString = "Name";
     int spaceBetween = 4;
 
     // print header
     printbuffer << "\n";
     printbuffer.set_color(Color::GREEN);
-    printbuffer << sizeString
-                << std::string(numDigitsOfBiggestFile - sizeString.length() + spaceBetween, ' ')
-                << modifiedString
-                << std::string(dateSize - modifiedString.length() + spaceBetween, ' ') << nameString
+    printbuffer << size_string
+                << std::string(numDigitsOfBiggestFile - size_string.length() + spaceBetween, ' ')
+                << modified_string
+                << std::string(dateSize - modified_string.length() + spaceBetween, ' ') << name_string
                 << "\n";
 
     // lines under header
-    printbuffer << std::string(sizeString.length(), '-')
-                << std::string(numDigitsOfBiggestFile - sizeString.length() + spaceBetween, ' ')
-                << std::string(modifiedString.length(), '-')
-                << std::string(dateSize - 8 + spaceBetween, ' ') 
-                << std::string(nameString.length(), '-') 
-                << "\n";
-                
+    printbuffer << std::string(size_string.length(), '-')
+                << std::string(numDigitsOfBiggestFile - size_string.length() + spaceBetween, ' ')
+                << std::string(modified_string.length(), '-')
+                << std::string(dateSize - 8 + spaceBetween, ' ')
+                << std::string(name_string.length(), '-') << "\n";
+
     // data
     printbuffer.set_color(Color::WHITE);
     int compensatingTabs = 0;
 
     for (std::shared_ptr<Node> node : nodeList)
-    {                      
+    {
         compensatingTabs = get_digits(node->size);
 
         printbuffer << node->size
                     << std::string(numDigitsOfBiggestFile - compensatingTabs + spaceBetween, ' ')
-                    << format_time(node->lastModifiedTime)
-                    << std::string(spaceBetween, ' ');
+                    << format_time(node->lastModifiedTime) << std::string(spaceBetween, ' ');
 
         if (node->get_node_type() == NodeType::Directory)
         {
@@ -108,7 +103,6 @@ std::string ListDirectoryCommand::format_time(time_t time)
     return oss.str();
 }
 
-
 long long ListDirectoryCommand::get_digits(long long size)
 {
     if (size == 0)
@@ -123,6 +117,5 @@ long long ListDirectoryCommand::get_digits(long long size)
 
     return digits;
 }
-
 
 }  // namespace virtualfilesystem

@@ -78,12 +78,22 @@ ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fil
 // std::pair<std::string, std::vector<std::string>> CommandManager::split_command(const std::string&
 // line)
 
-ErrorCode FileSystem::copy_file(const std::string& fileX, const std::string& fileY)
+ErrorCode FileSystem::copy_file(const std::string& fullfilepathX, const std::string& fullfilepathY)
 {
     // split directory and file so we can deal with them seperately
+    int indexPathFileBreak = fullfilepathX.rfind(seperator_symbol);
 
-    // std::pair<std::string, std::vector<std::string>> CommandManager::split_command(const
-    // std::string& line)
+    std::string filename;
+    if (indexPathFileBreak == std::string::npos){
+        filename = fullfilepathX;
+    }
+    else {
+        filename = fullfilepathX.substr(indexPathFileBreak+1);
+    }
+
+    
+
+    //std::pair<std::string, std::vector<std::string>> CommandManager::split_command(const std::string& line)
     //// get directory of first file
     // auto originResult = get_directory(fileX);
     // std::shared_ptr<Directory> dirOrigin = originResult? originResult.value() : currentDirectory;
@@ -99,69 +109,32 @@ ErrorCode FileSystem::copy_file(const std::string& fileX, const std::string& fil
 
 ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
 {
-    // split the directory up by seperator, step through each one and change to that directory
-    // (chain)
-    std::vector<std::string> directoryList =
-        helper::split_string(directoryFullName, seperator_symbol);
 
-    // if it's empty, there's no chaining going on, so just use the path given
-    if (directoryList.empty())
+    auto result = get_directory(directoryFullName);
+    
+    if (!result)
     {
-        directoryList.push_back(directoryFullName);
+        return ErrorCode(result.error());
     }
 
-    // in case there is an error, we can revert back to what we had before
-    std::shared_ptr<Directory> oldCurrentDirectory = currentDirectory;
+    //valid, traverse and build the new structure
+    currentDirectory = result.value();
 
-    for (std::string directoryName : directoryList)
-    {
-        if (directoryName == parent_directory_symbol)
-        {
-            if (auto parent = currentDirectory->parentDirectory.lock())
-            {
-                currentDirectory = parent;
+    full_directory_structure.clear();
 
-                // check if we're deeper than root
-                if (full_directory_structure.size() > 1)
-                {
-                    full_directory_structure.pop_back();
-                }
-            }
-        }
-        else if (directoryName == root_symbol)
-        {
-            full_directory_structure.erase(full_directory_structure.begin() + 1,
-                                           full_directory_structure.end());
-            currentDirectory = root;
-        }
-        else
-        {
-            // split the path
-            bool found = false;
+    full_directory_structure.push_back(root_symbol_display);
 
-            // actual directory, check current directory lists
-            for (std::shared_ptr<Directory> directory : currentDirectory->directoryList)
-            {
-                if (directory->name == directoryName)
-                {
-                    full_directory_structure.push_back(directory->name);
-                    currentDirectory = directory;
-                    found = true;
-                    break;
-                }
-            }
+    std::shared_ptr<Directory> dir = currentDirectory;
 
-            if (!found)
-            {
-                currentDirectory = oldCurrentDirectory;
-                return ErrorCode(ErrorCode::NotFound);
-            }
-        }
+    while (dir && dir != root) {
+        full_directory_structure.insert(full_directory_structure.begin() + 1, dir->name);
+        dir = dir->parentDirectory.lock();
     }
 
     calculate_full_path();
 
     return ErrorCode(ErrorCode::Success);
+
 }
 
 std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory(
