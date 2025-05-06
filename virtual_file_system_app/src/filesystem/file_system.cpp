@@ -112,6 +112,16 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
     if (originNodePtr->get_node_type() == NodeType::Directory)
     {
         // go through the entire directory and copy over everything
+        std::shared_ptr<Directory> originDirectory = std::static_pointer_cast<Directory>(originNodePtr);
+        
+        //make base directory
+        //destNodeParentDirectory->nodeMap->
+        //
+        ////copy nodes over (recursive?)
+        //for (auto node : originDirectory->nodeMap) {
+
+        //}
+        //make_directory
     }
     else if (originNodePtr->get_node_type() == NodeType::File)
     {

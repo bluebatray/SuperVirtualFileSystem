@@ -48,6 +48,7 @@ class FileSystem
     std::string current_full_path;
 
    private:
+    std::shared_ptr<Directory> deep_copy_directory(std::shared_ptr<Directory> originDirectory);
     std::expected<std::shared_ptr<Directory>, ErrorCode> get_directory(const std::string& path);
     std::expected<std::pair<std::shared_ptr<Directory>, std::shared_ptr<Node>>, ErrorCode>
     get_node_with_path(const std::string& path);
