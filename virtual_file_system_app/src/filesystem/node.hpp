@@ -16,7 +16,7 @@ struct Node
         : name(_name), size(_size), creationTime(_creationTime), lastModifiedTime(_creationTime)
     {
     }
-
+    virtual ~Node() = default;
     virtual NodeType get_node_type() const = 0;
 
     std::string name;

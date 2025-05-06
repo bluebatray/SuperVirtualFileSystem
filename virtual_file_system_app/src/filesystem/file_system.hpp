@@ -16,6 +16,7 @@ enum class ErrorCode
     Success,
     AlreadyExists,
     NotFound,
+    WrongType,
     Fail
 };
 class FileSystem
@@ -29,7 +30,7 @@ class FileSystem
     // std::vector<std::unique_ptr<Node>> GetNodeList();
     ErrorCode make_directory(const std::string& filex);
     ErrorCode make_file(const std::string& filex, const std::string& fileText);
-    ErrorCode copy_file(const std::string& fileX, const std::string& fileY);
+    ErrorCode copy_node(const std::string& fileX, const std::string& fileY);
     ErrorCode change_directory(const std::string& directoryName);
 
     // cp X Y - copy a file or a directory from path X to path Y
@@ -48,8 +49,12 @@ class FileSystem
 
    private:
     std::expected<std::shared_ptr<Directory>, ErrorCode> get_directory(const std::string& path);
-    std::expected<std::pair<std::shared_ptr<Directory>, std::shared_ptr<File>>, ErrorCode>
-    split_file_path(const std::string& path);
+    std::expected<std::pair<std::shared_ptr<Directory>, std::shared_ptr<Node>>, ErrorCode>
+    get_node_with_path(const std::string& path);
+
+    std::expected<std::pair<std::shared_ptr<Directory>, std::string>, ErrorCode>
+                    get_node_name_with_path(const std::string& nodefullpath);
+    //std::expected<std::shared_ptr<Node>, ErrorCode> get_node(const std::string& path);
 
     std::vector<std::string> split(std::string s, const std::string& delimiter);
     std::time_t get_current_epoch();

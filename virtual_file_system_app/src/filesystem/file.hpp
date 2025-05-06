@@ -15,9 +15,13 @@ class File : public Node
          std::weak_ptr<Directory> _parentDirectory)
         : Node(_name, _size, _creationTime), 
         parentDirectory(std::move(_parentDirectory)),
-          contents(std::move(_contents))
+          contents(_contents)
     {
     }
+    File(const File& _other, std::time_t _creationTime, std::weak_ptr<Directory> _parentDirectory)
+        : Node(_other.name, _other.size, _creationTime),
+          contents(_other.contents),
+          parentDirectory(_other.parentDirectory){}
 
     NodeType get_node_type() const override { return NodeType::File; } 
 
