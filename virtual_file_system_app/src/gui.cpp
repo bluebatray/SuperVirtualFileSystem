@@ -23,7 +23,8 @@ void Gui::run()
     
     execute_and_print("cd ..");
     execute_and_print("cp \"folder 1\"/file1 folder2/");
-    //execute_and_print("cp \"folder 1\"/file1 folder2/filecopy");
+    execute_and_print("cp \"folder2\"/file1 folder2/filecopy");
+    execute_and_print("cd folder2");
     execute_and_print("ls");
     
 

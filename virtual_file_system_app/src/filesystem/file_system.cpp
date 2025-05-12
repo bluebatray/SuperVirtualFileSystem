@@ -46,14 +46,14 @@ ErrorCode FileSystem::make_directory(const std::string& dirName)
     // if we have a directory, then it's made already, error out
     if (dirResult)
     {
-        return ErrorCode(ErrorCode::AlreadyExists);
+        return ErrorCode(ErrorCodeType::AlreadyExists);
     }
     std::shared_ptr<Directory> newDirectory = std::make_shared<Directory>(
         dirName, 0LL, get_current_epoch(), std::weak_ptr<Directory>(currentDirectory));
 
     currentDirectory->nodeMap.emplace(dirName, newDirectory);
 
-    return ErrorCode(ErrorCode::Success);
+    return ErrorCode(ErrorCodeType::Success);
 }
 
 ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fileText)
@@ -68,7 +68,7 @@ ErrorCode FileSystem::make_file(const std::string& filex, const std::string& fil
     currentDirectory->lastModifiedTime = currentTime;
     currentDirectory->size += newFile->size;
 
-    return ErrorCode(ErrorCode::Success);
+    return ErrorCode(ErrorCodeType::Success);
 }
 
 
@@ -98,14 +98,16 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
     }
     else {
         destName = resultDestNode.value().second;
-
-        // check if destination name isn't already there
-        auto destDirectoryIt = destNodeParentDirectory->nodeMap.find(destName);
-        if (destDirectoryIt != destNodeParentDirectory->nodeMap.end())
-        {
-            return ErrorCode::AlreadyExists;
-        }
+       
     }
+
+     // check if destination name isn't already there
+    auto destDirectoryIt = destNodeParentDirectory->nodeMap.find(destName);
+    if (destDirectoryIt != destNodeParentDirectory->nodeMap.end())
+    {
+        return ErrorCode(ErrorCodeType::AlreadyExists, destName, destNodeParentDirectory->name);
+    }
+
   
     // ok we've finally verified everything.
     // check if it's file or folder we're copying
@@ -115,6 +117,7 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
         std::shared_ptr<Directory> originDirectory = std::static_pointer_cast<Directory>(originNodePtr);
         
         //make base directory
+        //deep_copy_directory(originDirectory);
         //destNodeParentDirectory->nodeMap->
         //
         ////copy nodes over (recursive?)
@@ -129,14 +132,16 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
         std::weak_ptr<Directory> weakParent(destNodeParentDirectory);
 
         std::shared_ptr<File> destFile =
-            std::make_shared<File>(*originFile, get_current_epoch(), weakParent);
+            std::make_shared<File>(destName, *originFile, get_current_epoch(), weakParent);
 
         destNodeParentDirectory->nodeMap.emplace(destName, destFile);
         destNodeParentDirectory->size += destFile->size;
+
+        return ErrorCode(ErrorCodeType::Success);
     }
  
     // in case new nodetypes are added, error out for now
-    return ErrorCode(ErrorCode::Fail);
+    return ErrorCode(ErrorCodeType::Fail);
 }
 
 ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
@@ -165,7 +170,15 @@ ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
 
     calculate_full_path();
 
-    return ErrorCode(ErrorCode::Success);
+    return ErrorCode(ErrorCodeType::Success);
+}
+
+std::shared_ptr<Directory> FileSystem::deep_copy_directory(
+    std::shared_ptr<Directory> originDirectory)
+{
+
+    //originDirectory
+    return std::shared_ptr<Directory>();
 }
 
 std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory(
@@ -174,7 +187,7 @@ std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory(
     std::vector<std::string> directoryHierarchy = split(path, seperator_symbol);
 
     if (directoryHierarchy.size() == 0)
-        return std::unexpected(ErrorCode::Fail);
+        return std::unexpected(ErrorCode(ErrorCodeType::Fail));
 
     std::shared_ptr<Directory> tempCurrentDirectory = currentDirectory;
 
@@ -208,7 +221,7 @@ std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory(
             }
             else
             {
-                return std::unexpected(ErrorCode::Fail);  // folder doesn't exist
+                return std::unexpected(ErrorCode(ErrorCodeType::Fail));  // folder doesn't exist
             }
         }
     }
@@ -267,7 +280,7 @@ FileSystem::get_node_with_path(const std::string& nodefullpath)
     if (it == directory->nodeMap.end())
     {
         // node doesn't exist
-        return std::unexpected(ErrorCode::NotFound);
+        return std::unexpected(ErrorCode(ErrorCodeType::NotFound));
     }
 
     return std::make_pair(directory, it->second);

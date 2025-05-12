@@ -26,7 +26,7 @@ CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args
     ErrorCode returnCode = m_fileSystem.make_directory(args[1]);
 
     
-     if (returnCode == ErrorCode::AlreadyExists)
+     if (returnCode.type == ErrorCodeType::AlreadyExists)
     {
         PrintBuffer printbuffer;
 
@@ -36,7 +36,7 @@ CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args
     }
 
     // it's valid
-    if(returnCode == ErrorCode::Success)
+    if(returnCode.type == ErrorCodeType::Success)
         return CommandResult(CommandResultType::Success);
 
     //file system error

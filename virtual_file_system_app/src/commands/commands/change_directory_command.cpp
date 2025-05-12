@@ -6,7 +6,7 @@ CommandResult ChangeDirectoryCommand::handle_command(std::vector<std::string> ar
 {
     ErrorCode returnCode = m_filesystem.change_directory(args[1]);
 
-    if (returnCode == ErrorCode::NotFound) {
+    if (returnCode.type == ErrorCodeType::NotFound) {
         PrintBuffer printbuffer;
         printbuffer.add_error("Directory not found.");
         return CommandResult(CommandResultType::Invalid, printbuffer);

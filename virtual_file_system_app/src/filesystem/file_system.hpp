@@ -11,7 +11,7 @@
 namespace virtualfilesystem
 {
 
-enum class ErrorCode
+enum class ErrorCodeType
 {
     Success,
     AlreadyExists,
@@ -19,6 +19,13 @@ enum class ErrorCode
     WrongType,
     Fail
 };
+struct ErrorCode
+{
+    ErrorCodeType type;
+    const std::string extraData1;
+    const std::string extraData2;
+};
+
 class FileSystem
 {
    public:

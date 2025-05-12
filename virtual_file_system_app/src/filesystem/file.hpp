@@ -18,8 +18,9 @@ class File : public Node
           contents(_contents)
     {
     }
-    File(const File& _other, std::time_t _creationTime, std::weak_ptr<Directory> _parentDirectory)
-        : Node(_other.name, _other.size, _creationTime),
+    File(const std::string _name, const File& _other, std::time_t _creationTime,
+         std::weak_ptr<Directory> _parentDirectory)
+        : Node(_name, _other.size, _creationTime),
           contents(_other.contents),
           parentDirectory(_other.parentDirectory){}
 
