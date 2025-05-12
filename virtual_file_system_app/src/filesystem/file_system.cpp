@@ -46,7 +46,7 @@ ErrorCode FileSystem::make_directory(const std::string& dirName)
     // if we have a directory, then it's made already, error out
     if (dirResult)
     {
-        return ErrorCode(ErrorCodeType::AlreadyExists);
+        return ErrorCode(ErrorCodeType::AlreadyExists, dirName);
     }
     std::shared_ptr<Directory> newDirectory = std::make_shared<Directory>(
         dirName, 0LL, get_current_epoch(), std::weak_ptr<Directory>(currentDirectory));
@@ -113,26 +113,18 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
     // check if it's file or folder we're copying
     if (originNodePtr->get_node_type() == NodeType::Directory)
     {
-        // go through the entire directory and copy over everything
         std::shared_ptr<Directory> originDirectory = std::static_pointer_cast<Directory>(originNodePtr);
         
-        //make base directory
-        //deep_copy_directory(originDirectory);
-        //destNodeParentDirectory->nodeMap->
-        //
-        ////copy nodes over (recursive?)
-        //for (auto node : originDirectory->nodeMap) {
-
-        //}
-        //make_directory
+        //deep copy and add to nodemap
+        std::shared_ptr<Directory> newCopiedDirectory = deep_copy_directory(originDirectory);
+        destNodeParentDirectory->nodeMap.emplace(destName, newCopiedDirectory);       
     }
     else if (originNodePtr->get_node_type() == NodeType::File)
     {
         std::shared_ptr<File> originFile = std::static_pointer_cast<File>(originNodePtr);
         std::weak_ptr<Directory> weakParent(destNodeParentDirectory);
 
-        std::shared_ptr<File> destFile =
-            std::make_shared<File>(destName, *originFile, get_current_epoch(), weakParent);
+        std::shared_ptr<File> destFile = copy_file(originFile, weakParent, destName);            
 
         destNodeParentDirectory->nodeMap.emplace(destName, destFile);
         destNodeParentDirectory->size += destFile->size;
@@ -144,6 +136,10 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
     return ErrorCode(ErrorCodeType::Fail);
 }
 
+std::shared_ptr<File> FileSystem::copy_file(std::shared_ptr<File> origin, std::weak_ptr<Directory> weakParent, const std::string& newName)
+{
+    return std::make_shared<File>(newName, *origin, get_current_epoch(), weakParent);
+}
 ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
 {
     auto result = get_directory(directoryFullName);
@@ -173,12 +169,37 @@ ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
     return ErrorCode(ErrorCodeType::Success);
 }
 
+// Directory(const std::string& _name, long long _size, std::time_t _creationTime,
+//              std::weak_ptr<Directory> _parentDirectory)
+
 std::shared_ptr<Directory> FileSystem::deep_copy_directory(
     std::shared_ptr<Directory> originDirectory)
 {
+    /*Directory(const std::string& _name, long long _size, std::time_t _creationTime,
+              std::weak_ptr<Directory> _parentDirectory)*/
+    std::shared_ptr<Directory> newCopiedDirectory = std::make_shared<Directory>(
+        originDirectory->name, originDirectory->size, std::time(nullptr), originDirectory);
 
-    //originDirectory
-    return std::shared_ptr<Directory>();
+
+    for (auto dir : originDirectory->nodeMap)
+    {
+        if (dir.second->get_node_type() == NodeType::File)
+        {
+            //copy file
+            std::shared_ptr<File> originFile = std::static_pointer_cast<File>(dir.second);
+            std::shared_ptr<File> copiedFile = copy_file(originFile, originDirectory, dir.first);
+            newCopiedDirectory->nodeMap.emplace(dir.first, copiedFile);
+        }
+        else if (dir.second->get_node_type() == NodeType::Directory)
+        {
+            std::shared_ptr<Directory> copiedSubDir =
+                deep_copy_directory(std::static_pointer_cast<Directory>(dir.second));
+            newCopiedDirectory->nodeMap.emplace(dir.first, copiedSubDir);
+        }
+        
+    }    
+
+     return newCopiedDirectory;
 }
 
 std::expected<std::shared_ptr<Directory>, ErrorCode> FileSystem::get_directory(

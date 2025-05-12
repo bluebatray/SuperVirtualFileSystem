@@ -30,7 +30,7 @@ CommandResult MakeDirectoryCommand::handle_command(std::vector<std::string> args
     {
         PrintBuffer printbuffer;
 
-        printbuffer.add_error("Directory already exists.");
+        printbuffer.add_error("Directory " + returnCode.extraData1 + " already exists.");
 
         return CommandResult(CommandResultType::Invalid, printbuffer);
     }
