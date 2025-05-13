@@ -21,9 +21,9 @@ enum class ErrorCodeType
 };
 struct ErrorCode
 {
-    ErrorCodeType type;
-    const std::string extraData1;
-    const std::string extraData2;
+    ErrorCodeType type = ErrorCodeType::Fail;
+    std::string extraData1;
+    std::string extraData2;
 };
 
 class FileSystem
@@ -35,10 +35,11 @@ class FileSystem
     std::vector<std::shared_ptr<Node>> GetNodeList() const;
 
     // std::vector<std::unique_ptr<Node>> GetNodeList();
-    ErrorCode make_directory(const std::string& filex);
+    ErrorCode make_directory(const std::string& path);
     ErrorCode make_file(const std::string& filex, const std::string& fileText);
-    ErrorCode copy_node(const std::string& fileX, const std::string& fileY);
+    ErrorCode copy_node(const std::string& originFullPath, const std::string& destinationFullPath);
     ErrorCode change_directory(const std::string& directoryName);
+    ErrorCode get_file(const std::string& fullPathFile);
 
     // cp X Y - copy a file or a directory from path X to path Y
     /*mv X Y - move(or rename) a file or a directory from path X to path Y

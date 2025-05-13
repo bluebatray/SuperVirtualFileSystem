@@ -71,7 +71,7 @@ void Gui::run()
                 break;
             case io::InputEventType::Tab:
                 suggestion = commandmanager.get_suggestion(typedline);
-                insertionPoint = helper::safe_size_to_int(typedline.length());
+                insertionPoint = helper::safe_size_to_int(suggestion.length());
                 output_handler.move_insertion_point(insertionPoint);
                 typedline += suggestion;
                 suggestion = "";

@@ -117,6 +117,8 @@ ErrorCode FileSystem::copy_node(const std::string& originfullpathnode, const std
         
         //deep copy and add to nodemap
         std::shared_ptr<Directory> newCopiedDirectory = deep_copy_directory(originDirectory);
+        newCopiedDirectory->parentDirectory = destNodeParentDirectory;
+
         destNodeParentDirectory->nodeMap.emplace(destName, newCopiedDirectory);       
     }
     else if (originNodePtr->get_node_type() == NodeType::File)
@@ -169,18 +171,22 @@ ErrorCode FileSystem::change_directory(const std::string& directoryFullName)
     return ErrorCode(ErrorCodeType::Success);
 }
 
+ErrorCode FileSystem::get_file(const std::string& fullPathFile)
+{
+    //
+    return ErrorCode();
+}
+
 // Directory(const std::string& _name, long long _size, std::time_t _creationTime,
 //              std::weak_ptr<Directory> _parentDirectory)
 
 std::shared_ptr<Directory> FileSystem::deep_copy_directory(
     std::shared_ptr<Directory> originDirectory)
 {
-    /*Directory(const std::string& _name, long long _size, std::time_t _creationTime,
-              std::weak_ptr<Directory> _parentDirectory)*/
     std::shared_ptr<Directory> newCopiedDirectory = std::make_shared<Directory>(
         originDirectory->name, originDirectory->size, std::time(nullptr), originDirectory);
 
-
+    //todo need to fix this, I think it has issue with shallow copy instead of deep
     for (auto dir : originDirectory->nodeMap)
     {
         if (dir.second->get_node_type() == NodeType::File)

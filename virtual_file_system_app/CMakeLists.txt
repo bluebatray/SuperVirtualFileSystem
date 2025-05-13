@@ -13,6 +13,7 @@ add_executable(VirtualFileSystem
    "src/commands/commands/make_directory_command.cpp" 
    "src/commands/commands/make_file_command.cpp" 
    "src/commands/commands/list_directory_command.cpp" 
+   "src/commands/commands/print_file_contents_command.cpp" 
    "src/commands/commands/change_directory_command.cpp")
 
 # Ensure VirtualFileSystem is properly defined before linking
